@@ -1,0 +1,32 @@
+{
+  "name": "Server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "gulp",
+    "test": "gulp test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/jasmine": "^2.8.6",
+    "@types/mysql": "^2.15.2",
+    "@types/node": "^9.4.2",
+    "gulp": "^3.9.1",
+    "gulp-clean": "^0.4.0",
+    "gulp-jasmine": "^3.0.0",
+    "gulp-typescript": "^4.0.0",
+    "jasmine": "^3.0.0",
+    "run-sequence": "^2.2.1"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "datasync-js": "^3.2.2",
+    "express": "^4.16.2",
+    "mysql": "^2.15.0",
+    "socket.io": "^2.0.4",
+    "typescript": "^2.7.1"
+  }
+}
