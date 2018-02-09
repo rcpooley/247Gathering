@@ -1,6 +1,7 @@
-import {MyDB} from "./db";
+import {Web} from "./web";
 
-let config = require('./config.json');
+console.log('----- 247 Gathering Server -----');
 
-let db = new MyDB(config.mysql.host, config.mysql.username,
-    config.mysql.password, config.mysql.database, 3000);
+let web = new Web();
+
+web.start();
