@@ -1,5 +1,5 @@
 import {MyDB} from "./db";
-import {DataSocket, DataStoreServer} from "datasync-js";
+import {DataSocket, DataStore, DataStoreServer} from "datasync-js";
 
 export class DataSync {
 
@@ -7,6 +7,7 @@ export class DataSync {
 
     constructor(private database: MyDB) {
         this.setupServer();
+        this.serveAdminStore();
     }
 
     public addSocket(socket: SocketIO.Socket): void {
@@ -21,6 +22,12 @@ export class DataSync {
 
     private setupServer() {
         this.dsServer = new DataStoreServer()
-            .serveByUser('store');
+            .serveByUser('admin');
+    }
+
+    private serveAdminStore() {
+        this.dsServer.onBind((socket: DataSocket, store: DataStore, connInfo: any) => {
+            
+        });
     }
 }
