@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "gulp",
+    "start": "set DEBUG=mydbg && gulp",
     "test": "gulp test"
   },
   "keywords": [],
