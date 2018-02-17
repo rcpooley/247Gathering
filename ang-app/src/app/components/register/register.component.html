@@ -1,0 +1,46 @@
+<div class="container">
+    <h1>Register Form</h1>
+    <form>
+        <div class="form-group">
+            <label for="firstname">First Name</label>
+            <input type="text" class="form-control" id="firstname" required>
+        </div>
+
+        <div class="form-group">
+            <label for="lastname">Last Name</label>
+            <input type="text" class="form-control" id="lastname" required>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" id="email" required>
+        </div>
+
+        <div class="form-group">
+            <label for="howhear">How did you hear about 247?</label>
+            <select class="form-control" id="howhear" (change)="onHowHearChange($event.target.selectedIndex)">
+                <option *ngFor="let idx of getIndexes(hearOpts)" [selected]="idx === 0">{{hearOpts[idx]}}</option>
+                <option>Other</option>
+            </select>
+            <ng-container *ngIf="showHearOther">
+                <br>
+                <input type="text" class="form-control">
+            </ng-container>
+        </div>
+
+        <div class="form-group">
+            <label for="involvement">Involvement</label>
+            <div id="involvement" class="form-control multiselect">
+                <div class="opt"
+                     *ngFor="let idx of getIndexes(involveOpts)"
+                     (click)="toggleOpt(idx)"
+                     [class.selected]="involveOpts[idx].selected">
+                    {{involveOpts[idx].text}}
+                </div>
+            </div>
+        </div>
+
+
+        <button type="submit" class="btn btn-success">Register</button>
+    </form>
+</div>

@@ -1,48 +1,42 @@
 import {Injectable} from '@angular/core';
 
-import {DataSocket, DataStoreClient} from 'datasync-js';
+import {DataSocket, DataStore, DataStoreClient} from 'datasync-js';
 import * as socketIO from 'socket.io-client';
 
 @Injectable()
 export class CoreService {
 
     private client: DataStoreClient;
-    private connectLock: boolean;
+    private connected: boolean;
 
     constructor() {
         this.client = new DataStoreClient();
-        this.tryConnect();
+        this.connect();
     }
 
-    private delayConnect() {
-        if (this.connectLock) {
-            return;
-        }
-        this.connectLock = true;
-        setTimeout(() => {
-            this.connectLock = false;
-            this.tryConnect();
-        }, 3000);
-    }
-
-    private tryConnect() {
-        let socket = socketIO('http://localhost', {
-            reconnection: false
-        });
+    private connect() {
+        let socket = socketIO('http://localhost');
         let dsock = DataSocket.fromSocket(socket);
 
         socket.on('connect', () => {
+            console.log('Socket connected!');
+            this.connected = true;
             this.client.setSocket(dsock);
+            this.client.connectStore('settings');
         });
 
         socket.on('disconnect', () => {
-            this.client.setSocket(null);
-            this.delayConnect();
+            console.log('Socket disconnected');
+            this.connected = false;
+            this.client.clearSocket();
         });
+    }
 
-        socket.on('error', () => {
-            this.client.setSocket(null);
-            this.delayConnect();
-        });
+    public isConnected(): boolean {
+        return this.connected;
+    }
+
+    public getSettingsStore(): DataStore {
+        return this.client.getStore('settings');
     }
 }

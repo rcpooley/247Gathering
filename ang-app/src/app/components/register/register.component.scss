@@ -1,0 +1,20 @@
+.multiselect {
+    padding: 0;
+    cursor: default;
+
+    .opt {
+        padding: 2px 5px;
+    }
+
+    .opt:hover {
+        background-color: #c5eaff;
+    }
+
+    .opt.selected {
+        background-color: #9adaff;
+    }
+
+    .opt:not(:last-child) {
+        border-bottom: 1px solid #ced4da;
+    }
+}
