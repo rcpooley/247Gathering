@@ -38,7 +38,7 @@ export class Web {
 
     private routes() {
         this.app.get('*', (req, res) => {
-            res.send('It works!!!');
+            res.sendFile(__dirname + '\\timer.html')
         });
     }
 
