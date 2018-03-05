@@ -1,6 +1,5 @@
 import {Component, OnInit} from '@angular/core';
 import {CoreService} from '../../services/core.service';
-import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
 
 interface SelectOpt {
     text: string;
@@ -14,36 +13,17 @@ interface SelectOpt {
 })
 export class RegisterComponent implements OnInit {
 
-    form: FormGroup;
-    errors: any;
-
     involveOpts: SelectOpt[];
 
     hearOpts: string[];
     showHearOther: boolean;
 
-    greeek = ['Theta Xi', 'Kappa Alpha'];
-
-    constructor(public core: CoreService, private fb: FormBuilder) {
+    constructor(public core: CoreService) {
         this.involveOpts = [];
         this.hearOpts = [];
     }
 
     ngOnInit(): void {
-        this.form = new FormGroup({
-            firstName: this.fb.group({
-                firstNameCtrl: ['', Validators.required]
-            }),
-            lastName: this.fb.group({
-                lastNameCtrl: ['', Validators.required]
-            })
-        });
-        this.errors = {lastName: {lastNameCtrl: ''}};
-
-        this.form.valueChanges.subscribe((e) => {
-            this.updateErrors();
-        });
-
         let storeSettings = this.core.getSettingsStore();
 
         storeSettings.ref('/involvement').on('update', value => {
@@ -61,38 +41,6 @@ export class RegisterComponent implements OnInit {
         storeSettings.ref('/hearaboutus').on('update', value => {
             this.hearOpts = value;
         });
-    }
-
-    updateErrors() {
-        this.updateErrorsHelper(this.form, this.errors);
-
-        /* <ng-container *ngIf="form.controls.firstName.controls.firstNameCtrl as ctrl">
-         <div *ngIf="ctrl.invalid && (ctrl.dirty || ctrl.touched)" class="alert alert-danger">
-         <div *ngIf="ctrl.errors.required">
-             First name is required
-         </div>
-         </div>
-         </ng-container>*/
-    }
-
-    private updateErrorsHelper(group: any, errObj: any) {
-        if (group.controls) {
-            Object.keys(group).forEach(key => {
-                if (!(key in errObj)) {
-                    errObj[key] = {};
-                }
-                this.updateErrorsHelper(group.controls[key], errObj[key]);
-            });
-        } else {
-            let errHtml = '';
-            if (group.invalid && (group.dirty || group.touched)) {
-
-            }
-        }
-    }
-
-    onSubmit() {
-        console.log(this.form);
     }
 
     getIndexes(arr: any[]) {
