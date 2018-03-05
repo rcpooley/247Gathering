@@ -1,5 +1,6 @@
 import {MyDB} from "./db";
 import {DataSocket, DataStore, DataStoreServer} from "datasync-js";
+import {PacketRegister} from "./packets";
 
 export class DataSync {
 
@@ -7,7 +8,7 @@ export class DataSync {
 
     constructor(private database: MyDB) {
         this.setupServer();
-        this.setupSettingsStore();
+        this.serveSettingsStore();
         this.serveAdminStore();
     }
 
@@ -24,17 +25,30 @@ export class DataSync {
     private setupServer() {
         this.dsServer = new DataStoreServer()
             .serveGlobal('settings')
+            .serveByUser('user')
             .serveByUser('admin');
     }
 
-    private setupSettingsStore() {
+    private serveSettingsStore() {
         let store = this.dsServer.getStore('settings');
 
-        let involveOpts = ['CCF', 'a', 'B'];
-        let hearOpts = ['Friends', 'My ministry', 'Email', 'Randomly wandered in'];
+        let involveOpts = ['CCF', 'a', 'B', 'c'];
+        let hearOpts = [
+            'Friends',
+            'My ministry',
+            'Email',
+            'Randomly wandered in'];
 
         store.ref('/involvement').update(involveOpts);
         store.ref('/hearaboutus').update(hearOpts);
+    }
+
+    private serveUserStore() {
+        this.dsServer.onBind((socket: DataSocket, store: DataStore, connInfo: any) => {
+            store.ref('/register').on('updateDirect', (value: PacketRegister) => {
+
+            });
+        });
     }
 
     private serveAdminStore() {

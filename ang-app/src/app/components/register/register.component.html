@@ -1,14 +1,22 @@
 <div class="container">
     <h1>Register Form</h1>
-    <form>
-        <div class="form-group">
+    <form [formGroup]="form">
+        <div class="form-group" formGroupName="firstName">
             <label for="firstname">First Name</label>
-            <input type="text" class="form-control" id="firstname" required>
+            <input type="text" class="form-control" id="firstname" formControlName="firstNameCtrl" (blur)="updateErrors()">
+            <ng-container *ngIf="form.controls.firstName.controls.firstNameCtrl as ctrl">
+                <div *ngIf="ctrl.invalid && (ctrl.dirty || ctrl.touched)" class="alert alert-danger">
+                    <div *ngIf="ctrl.errors.required">
+                        First name is required
+                    </div>
+                </div>
+            </ng-container>
         </div>
 
-        <div class="form-group">
+        <div class="form-group" formGroupName="lastName">
             <label for="lastname">Last Name</label>
-            <input type="text" class="form-control" id="lastname" required>
+            <input type="text" class="form-control" id="lastname" formControlName="lastNameCtrl" (blur)="updateErrors()">
+            {{errors.lastName.lastNameCtrl}}
         </div>
 
         <div class="form-group">
@@ -29,6 +37,13 @@
         </div>
 
         <div class="form-group">
+            <label for="greekselect">Greek Involvement</label>
+            <select class="form-control" id="greekselect">
+                <option></option>
+            </select>
+        </div>
+
+        <div class="form-group">
             <label for="involvement">Involvement</label>
             <div id="involvement" class="form-control multiselect">
                 <div class="opt"
@@ -40,7 +55,6 @@
             </div>
         </div>
 
-
-        <button type="submit" class="btn btn-success">Register</button>
+        <button (click)="onSubmit()" class="btn btn-success">Register</button>
     </form>
 </div>
