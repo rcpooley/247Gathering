@@ -1,0 +1,226 @@
+<html>
+<head>
+    <title>247 Timer</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <style>
+        #header {
+            text-align: center;
+            font-size: 40px;
+        }
+
+        #curtime {
+            text-align: center;
+            font-size: 34px;
+        }
+
+        #main {
+            margin-top: 40px;
+        }
+
+        #mytbl {
+            border-collapse: collapse;
+        }
+
+        #mytbl td,
+        #mytbl th {
+            border: 1px solid black;
+        }
+
+        #mytbl td {
+            font-size: 20px;
+        }
+
+        #mytbl td:not(:first-child) {
+            text-align: center;
+        }
+
+        #mytbl tr:last-child:not(.active) {
+            background-color: #10c100;
+        }
+
+        #mytbl tr.active {
+            background-color: gold;
+        }
+
+        #buttons {
+            text-align: center;
+        }
+
+        #btn {
+            width: 80px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+<div id="header">247 Timer</div>
+<div id="curtime"></div>
+<div id="main" class="container">
+    <table id="mytbl" class="table">
+        <tr>
+            <th>Section</th>
+            <th>Time Range</th>
+            <th>Remaining</th>
+            <th>Elapsed</th>
+            <th>Total</th>
+        </tr>
+    </table>
+    <div id="buttons">
+        <button id="btn" onclick="start()">Start</button>
+    </div>
+</div>
+<script>
+    var startTime = 7 * 60 + 3;
+
+    var categoryData = [
+        {
+            name: 'Worship',
+            mins: 25
+        },
+        {
+            name: 'Prayer',
+            mins: 9
+        },
+        {
+            name: 'Speaker',
+            mins: 7
+        },
+        {
+            name: 'Last Song',
+            mins: 6
+        }
+    ];
+
+    function curSecs() {
+        return Math.floor(new Date().getTime() / 1000);
+    }
+
+    function calcTime(mins) {
+        var hour = Math.floor(mins / 60);
+        mins -= hour * 60;
+        mins = mins.toString();
+        if (mins.length === 1) mins = '0' + mins;
+        return hour + ':' + mins;
+    }
+
+    function updateTime() {
+        var d = new Date();
+        var m = d.getMinutes().toString();
+        if (m.length === 1) m = '0' + m;
+        var s = d.getSeconds().toString();
+        if (s.length === 1) s = '0' + s;
+        var h = d.getHours();
+        if (h == 0) h = 12;
+        if (h > 12) h -= 12;
+        $('#curtime').html(h + ':' + m + ':' + s);
+    }
+    var timeInt = setInterval(updateTime, 1000);
+    updateTime();
+
+    var $tbl = $('#mytbl');
+
+    var curTime = startTime;
+
+    var row, cell;
+
+    for (var i = 0; i < categoryData.length; i++) {
+        var data = categoryData[i];
+        row = $tbl[0].insertRow(-1);
+        row.id = "r" + i;
+        row.insertCell(-1).innerHTML = data.name;
+        row.insertCell(-1).innerHTML = calcTime(curTime) + " - " + calcTime(curTime + data.mins);
+        cell = row.insertCell(-1);
+        cell.className = 'remaining';
+        cell.innerHTML = data.mins + ':00';
+        cell = row.insertCell(-1);
+        cell.className = 'elapsed';
+        cell.innerHTML = '0:00';
+        row.insertCell(-1).innerHTML = data.mins + ':00';
+        curTime += data.mins;
+    }
+
+    row = $tbl[0].insertRow(-1);
+    row.insertCell(-1).innerHTML = 'Total';
+    row.id = 'r' + categoryData.length;
+    row.insertCell(-1).innerHTML = calcTime(startTime) + ' - ' + calcTime(curTime);
+    cell = row.insertCell(-1);
+    cell.className = 'remaining';
+    cell.innerHTML = (curTime - startTime) + ':00';
+    cell = row.insertCell(-1);
+    cell.className = 'elapsed';
+    cell.innerHTML = '0:00';
+    var totalMins = curTime - startTime;
+    row.insertCell(-1).innerHTML = totalMins + ':00';
+
+    var curLevel = 0;
+
+    var $row;
+    var $total = $('#r' + categoryData.length);
+
+    function tick() {
+        updateTime();
+        if (curLevel >= categoryData.length) return;
+
+        var data = categoryData[curLevel];
+
+        if (!data.secsElapsed) {
+            data.startTime = curSecs() - 1;
+            data.secsElapsed = 1;
+        } else {
+            data.secsElapsed++;// = curSecs() - data.startTime;
+        }
+
+        $row = $('#r' + curLevel);
+        $row.find('.remaining').html(calcTime(data.mins * 60 - data.secsElapsed));
+        $row.find('.elapsed').html(calcTime(data.secsElapsed));
+
+        var sumElapsed = 0;
+        var sumRemaining = 0;
+        for (var i = 0; i < categoryData.length; i++) {
+            if (categoryData[i].secsElapsed) {
+                sumElapsed += categoryData[i].secsElapsed;
+            }
+            if (i >= curLevel) {
+                sumRemaining += categoryData[i].mins * 60;
+            }
+        }
+        $total.find('.remaining').html(calcTime(sumRemaining - data.secsElapsed));
+        $total.find('.elapsed').html(calcTime(sumElapsed));
+
+        if (data.secsElapsed >= data.mins * 60) {
+            curLevel++;
+        }
+
+        $('#mytbl').find('tr').removeClass('active');
+        $row = $('#r' + curLevel);
+        $row.addClass('active');
+    }
+
+    var started = false;
+    function start() {
+        if (!started) {
+            setInterval(tick, 1000);
+            tick();
+            $('#btn').html('Next');
+            started = true;
+            clearInterval(timeInt);
+        } else {
+            if (curLevel < categoryData.length)
+                curLevel++;
+            $('#mytbl').find('tr').removeClass('active');
+            $row = $('#r' + curLevel);
+            $row.addClass('active');
+            var sumElapsed = 0;
+            for (var i = 0; i < categoryData.length; i++) {
+                if (categoryData[i].secsElapsed) {
+                    sumElapsed += categoryData[i].secsElapsed;
+                }
+            }
+            $total.find('.remaining').html('0:00');
+            $total.find('.elapsed').html(calcTime(sumElapsed));
+        }
+    }
+</script>
+</body>
+</html>
