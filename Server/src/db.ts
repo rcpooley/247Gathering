@@ -49,4 +49,35 @@ export class MyDB {
             this.delayConnect();
         });
     }
+
+    public getGreekOpts(callback: (opts: string[]) => void): void {
+        this.conn.query('SELECT * FROM greek', function (err, results) {
+            if (err) throw err;
+            callback(results);
+        });
+    }
+
+    public getMinistryOpts(callback: (opts: string[]) => void): void {
+        this.conn.query('SELECT * FROM ministry', function (err, results) {
+            if (err) throw err;
+            callback(results);
+        });
+    }
+
+    public getHowHearOpts(callback: (opts: string[]) => void): void {
+        this.conn.query('SELECT * FROM howhear', function (err, results) {
+            if (err) throw err;
+            callback(results);
+        });
+    }
+
+    public registerUser(firstname: string, lastname: string, email: string,
+                        phone: string, howhear: number, howhearOther: string,
+                        greek: number, greekOther: string, ministry: number, ministryOther: string) {
+        this.conn.query('INSERT INTO user(firstName, lastName, email, phone, howhear, howhearOther, ' +
+            'ministry, ministryOther, greek, greekOther) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [firstname, lastname, email, phone, howhear, howhearOther,
+            ministry, ministryOther, greek, greekOther], function (err) {
+            if (err) throw err;
+        });
+    }
 }

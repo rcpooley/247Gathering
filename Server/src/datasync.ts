@@ -30,17 +30,31 @@ export class DataSync {
     }
 
     private serveSettingsStore() {
+        this.updateSettingsStore();
+    }
+
+    public updateSettingsStore() {
         let store = this.dsServer.getStore('settings');
 
-        let involveOpts = ['CCF', 'a', 'B', 'c'];
-        let hearOpts = [
-            'Friends',
-            'My ministry',
-            'Email',
-            'Randomly wandered in'];
+        let proms = [];
 
-        store.ref('/involvement').update(involveOpts);
-        store.ref('/hearaboutus').update(hearOpts);
+        proms.push(new Promise(resolve => {
+            this.database.getGreekOpts(resolve);
+        }));
+        proms.push(new Promise(resolve => {
+            this.database.getMinistryOpts(resolve);
+        }));
+        proms.push(new Promise(resolve => {
+            this.database.getHowHearOpts(resolve);
+        }));
+
+        Promise.all(proms).then(data => {
+            store.ref('/').update({
+                greekOpts: data[0],
+                ministryOpts: data[1],
+                hearOpts: data[2]
+            });
+        });
     }
 
     private serveUserStore() {
