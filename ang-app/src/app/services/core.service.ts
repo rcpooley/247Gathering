@@ -1,65 +1,54 @@
 import {Injectable} from '@angular/core';
-
-import {DataSocket, DataStore, DataStoreClient} from 'datasync-js';
 import * as socketIO from 'socket.io-client';
-import {HttpClient} from '@angular/common/http';
+import {PacketRegister, PacketSettings} from "247-core/dist/interfaces/packets";
+import {SettingsCallback} from "247-core/dist/interfaces/callbacks";
+import {MyEvents} from "247-core/dist/events";
 
 @Injectable()
 export class CoreService {
 
     private baseUrl: string;
 
-    private client: DataStoreClient;
+    private socket: SocketIOClient.Socket;
     private connected: boolean;
 
-    constructor(private http: HttpClient) {
+    //Cached responses
+    private settings: PacketSettings;
+
+    constructor() {
         this.baseUrl = 'http://localhost:80';
-        this.client = new DataStoreClient();
         this.connect();
     }
 
     private connect() {
         let socket = socketIO('http://localhost');
-        let dsock = DataSocket.fromSocket(socket);
 
         socket.on('connect', () => {
             console.log('Socket connected!');
             this.connected = true;
-            this.client.setSocket(dsock);
-            this.client.connectStore('settings');
         });
 
         socket.on('disconnect', () => {
             console.log('Socket disconnected');
             this.connected = false;
-            this.client.clearSocket();
         });
+
+        this.socket = socket;
     }
 
     public isConnected(): boolean {
         return this.connected;
     }
 
-    public getSettingsStore(): DataStore {
-        return this.client.getStore('settings');
+    public getSettings(callback: SettingsCallback) {
+        if (this.settings) {
+            callback(this.settings);
+        } else {
+            this.socket.emit(MyEvents.fetchSettings, callback);
+        }
     }
 
-    public registerUser(firstname: string, lastname: string, email: string,
-                        phone: string, howhear: number, howhearOther: string,
-                        greek: number, greekOther: string, ministry: number, ministryOther: string) {
-        this.http.post(this.baseUrl + '/register', {
-            firstName: firstname,
-            lastName: lastname,
-            email: email,
-            phone: phone,
-            howhear: howhear,
-            howhearOther: howhearOther,
-            greek: greek,
-            greekOther: greekOther,
-            ministry: ministry,
-            ministryOther: ministryOther
-        }).subscribe(val => {
-            window.location.href = '/';
-        });
+    public registerUser(regInfo: PacketRegister) {
+        this.socket.emit(MyEvents.registerUser, regInfo);
     }
 }

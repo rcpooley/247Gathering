@@ -1,41 +1,25 @@
 import {MyDB} from "./db";
-import {DataSocket, DataStore, DataStoreServer} from "datasync-js";
-import {PacketRegister} from "./packets";
+import {SettingsCallback} from "247-core/src/interfaces/callbacks";
+import {PacketSettings} from "247-core/src/interfaces/packets";
+import {MyEvents} from "247-core/dist/events";
+import {PacketRegister} from "247-core/dist/interfaces/packets";
 
 export class DataSync {
 
-    private dsServer: DataStoreServer;
-
     constructor(private database: MyDB) {
-        this.setupServer();
-        this.serveSettingsStore();
-        this.serveAdminStore();
     }
 
     public addSocket(socket: SocketIO.Socket): void {
-        let dsock = DataSocket.fromSocket(socket);
+        socket.on(MyEvents.fetchSettings, (callback: SettingsCallback) => {
+            this.getAllSettings(callback);
+        });
 
-        this.dsServer.addSocket(dsock);
-
-        socket.on('disconnect', () => {
-            this.dsServer.removeSocket(dsock);
+        socket.on(MyEvents.registerUser, (regInfo: PacketRegister) => {
+            this.registerUser(regInfo);
         });
     }
 
-    private setupServer() {
-        this.dsServer = new DataStoreServer()
-            .serveGlobal('settings')
-            .serveByUser('user')
-            .serveByUser('admin');
-    }
-
-    private serveSettingsStore() {
-        this.updateSettingsStore();
-    }
-
-    public updateSettingsStore() {
-        let store = this.dsServer.getStore('settings');
-
+    private getAllSettings(callback: SettingsCallback) {
         let proms = [];
 
         proms.push(new Promise(resolve => {
@@ -49,25 +33,30 @@ export class DataSync {
         }));
 
         Promise.all(proms).then(data => {
-            store.ref('/').update({
+            let settings: PacketSettings = {
                 greekOpts: data[0],
                 ministryOpts: data[1],
                 hearOpts: data[2]
-            });
+            };
+
+            callback(settings);
         });
     }
 
-    private serveUserStore() {
-        this.dsServer.onBind((socket: DataSocket, store: DataStore, connInfo: any) => {
-            store.ref('/register').on('updateDirect', (value: PacketRegister) => {
+    private registerUser(regInfo: PacketRegister) {
+        //Verify info
+        let keys = Object.keys(regInfo);
+        for (let i = 0; i < keys.length; i++) {
+            if (keys[i].endsWith("Other")) continue;
 
-            });
-        });
-    }
+            let val = regInfo[keys[i]];
 
-    private serveAdminStore() {
-        this.dsServer.onBind((socket: DataSocket, store: DataStore, connInfo: any) => {
-            
-        });
+            if (!isNaN(parseInt(val))) continue;
+            if (val.length == 0) return;
+        }
+
+        this.database.registerUser(regInfo.firstName, regInfo.lastName, regInfo.email,
+            regInfo.phone, regInfo.howhear, regInfo.howhearOther, regInfo.greek,
+            regInfo.greekOther, regInfo.ministry, regInfo.ministryOther);
     }
 }
