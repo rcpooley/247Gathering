@@ -18,3 +18,25 @@ export interface PacketRegister {
     greek: number;
     greekOther: string;
 }
+
+export interface PacketSearchUsers {
+    query: string;
+}
+
+export interface User {
+    id: number;
+    firstName: string;
+    lastName: string;
+}
+
+export interface PacketSearchUsersResponse {
+    users: User[];
+}
+
+export interface PacketCheckIn {
+    userID: number;
+}
+
+export interface PacketResponse {
+    success: boolean;
+}

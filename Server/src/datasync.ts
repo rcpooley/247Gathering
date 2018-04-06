@@ -1,8 +1,7 @@
 import {MyDB} from "./db";
-import {SettingsCallback} from "247-core/src/interfaces/callbacks";
-import {PacketSettings} from "247-core/src/interfaces/packets";
+import {SettingsCallback} from "247-core/dist/interfaces/callbacks";
+import {PacketRegister, PacketSearchUsers, PacketSettings, User} from "247-core/dist/interfaces/packets";
 import {MyEvents} from "247-core/dist/events";
-import {PacketRegister} from "247-core/dist/interfaces/packets";
 
 export class DataSync {
 
@@ -16,6 +15,10 @@ export class DataSync {
 
         socket.on(MyEvents.registerUser, (regInfo: PacketRegister) => {
             this.registerUser(regInfo);
+        });
+
+        socket.on(MyEvents.searchUsers, (packet: PacketSearchUsers, callback: (users: User[]) => void) => {
+            this.searchUsers(packet, callback);
         });
     }
 
@@ -58,5 +61,11 @@ export class DataSync {
         this.database.registerUser(regInfo.firstName, regInfo.lastName, regInfo.email,
             regInfo.phone, regInfo.howhear, regInfo.howhearOther, regInfo.greek,
             regInfo.greekOther, regInfo.ministry, regInfo.ministryOther);
+    }
+
+    private searchUsers(packet: PacketSearchUsers, callback: (users: User[]) => void) {
+        this.database.searchUsers(packet.query, (users: User[]) => {
+            callback(users);
+        });
     }
 }

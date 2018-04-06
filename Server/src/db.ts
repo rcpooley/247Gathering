@@ -1,4 +1,5 @@
 import * as mysql from 'mysql';
+import {User} from "247-core/dist/interfaces/packets";
 
 export class MyDB {
 
@@ -78,6 +79,30 @@ export class MyDB {
             'ministry, ministryOther, greek, greekOther) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [firstname, lastname, email, phone, howhear, howhearOther,
             ministry, ministryOther, greek, greekOther], function (err) {
             if (err) throw err;
+        });
+    }
+
+    public searchUsers(query: string, callback: (users: User[]) => void) {
+        let spl = query.split(' ').filter(str => str.length > 0);
+
+        if (spl.length == 0) {
+            return callback([]);
+        }
+
+        let sql = 'SELECT * FROM user WHERE';
+        let noOR = true;
+        let args = [];
+
+        spl.forEach(str => {
+            if (!noOR) sql += ' OR';
+            noOR = false;
+            sql += ` firstName=? OR lastName=?`;
+            args.push(str, str);
+        });
+
+        this.conn.query(sql, args, function (err, results) {
+            if (err) throw err;
+            callback(results);
         });
     }
 }

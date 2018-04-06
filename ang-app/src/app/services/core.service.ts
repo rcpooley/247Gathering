@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
 import * as socketIO from 'socket.io-client';
-import {PacketRegister, PacketSettings} from "247-core/dist/interfaces/packets";
-import {SettingsCallback} from "247-core/dist/interfaces/callbacks";
+import {PacketRegister, PacketSearchUsers, PacketSettings, User} from "247-core/dist/interfaces/packets";
 import {MyEvents} from "247-core/dist/events";
+import {SettingsCallback} from "247-core/dist/interfaces/callbacks";
 
 @Injectable()
 export class CoreService {
@@ -14,6 +14,9 @@ export class CoreService {
 
     //Cached responses
     private settings: PacketSettings;
+
+    //Temp register name
+    public tmpName: string = null;
 
     constructor() {
         this.baseUrl = 'http://localhost:80';
@@ -46,5 +49,9 @@ export class CoreService {
 
     public registerUser(regInfo: PacketRegister) {
         this.socket.emit(MyEvents.registerUser, regInfo);
+    }
+
+    public searchUsers(packet: PacketSearchUsers, callback: (users: User[]) => void) {
+        this.socket.emit(MyEvents.searchUsers, packet, callback);
     }
 }

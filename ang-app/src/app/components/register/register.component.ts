@@ -26,6 +26,13 @@ export class RegisterComponent implements OnInit {
             greek: -1,
             greekOther: '',
         };
+
+        if (this.core.tmpName) {
+            let spl = this.core.tmpName.split(' ').filter(a => a.length > 0);
+            if (spl.length > 0) this.regForm.firstName = spl[0];
+            if (spl.length > 1) this.regForm.lastName = spl[1];
+            this.core.tmpName = null;
+        }
     }
 
     ngOnInit(): void {

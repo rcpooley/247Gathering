@@ -1,3 +1,46 @@
-<p>
-  home-main works!
-</p>
+<div id="headtext">
+    Welcome to 247!
+</div>
+
+<div id="checkin">
+    <span class="text">Check In</span><br>
+    <input [(ngModel)]="checkInQuery" type="text" placeholder="Your Name" (keydown)="checkInTick()"/><br>
+
+    <!-- Search loading -->
+    <ng-container *ngIf="userList === null && checkInQuery.length > 0; else havelist">
+        <div class="loading">
+            Searching for {{checkInQuery}}
+            <img src="assets/loading.gif">
+        </div>
+    </ng-container>
+
+    <!-- Search complete -->
+    <ng-template #havelist>
+        <ng-container *ngIf="userList">
+
+            <!-- No user found -->
+            <ng-container *ngIf="userList.length === 0; else yesusers">
+                Sorry, we couldn't find {{checkInQuery}} in our system.<br>
+                Would you like to <a [routerLink]="['./register']" (click)="goRegister()">Register</a>?
+            </ng-container>
+
+            <!-- Users found -->
+            <ng-template #yesusers>
+                <div class="userlist">
+                    <div *ngFor="let a of userList" class="line">
+                        <table>
+                            <tr>
+                                <td>
+                                    {{a.firstName}} {{a.lastName}}
+                                </td>
+                                <td>
+                                    <input type="button" class="btn btn-success" value="Check In"/>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </ng-template>
+        </ng-container>
+    </ng-template>
+</div>

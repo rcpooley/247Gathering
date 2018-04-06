@@ -1,0 +1,51 @@
+#headtext {
+    font-size: 40px;
+    text-align: center;
+}
+
+#checkin {
+    text-align: center;
+    margin-top: 20px;
+
+    > .text {
+        font-size: 22px;
+    }
+
+    > input {
+        text-align: center;
+        margin-left: 4px;
+        font-size: 18px;
+    }
+
+    > .loading {
+        img {
+            width: 30px;
+            height: 30px;
+        }
+    }
+
+    > .userlist {
+        margin-top: 10px;
+
+        > .line {
+            background-color: #8b9eff;
+            border-radius: 8px;
+            padding: 4px 5px;
+            max-width: 300px;
+            display: inline-block;
+            width: 100%;
+
+            > table {
+                width: 100%;
+
+                input {
+                    float: right;
+                }
+
+                td:last-child {
+                    width: 1px;
+                }
+            }
+        }
+    }
+}
