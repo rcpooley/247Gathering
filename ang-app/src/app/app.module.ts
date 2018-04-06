@@ -7,18 +7,22 @@ import {FormsModule} from '@angular/forms';
 import { HomeComponent } from './components/home/home.component';
 import { HomeNavbarComponent } from './components/home-navbar/home-navbar.component';
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
+import {AppRoutingModule} from "./app-routing.module";
+import { AboutUsComponent } from './components/about-us/about-us.component';
 
 @NgModule({
     declarations: [
         AppComponent,
         RegisterComponent,
         HomeComponent,
-        HomeNavbarComponent
+        HomeNavbarComponent,
+        AboutUsComponent
     ],
     imports: [
         BrowserModule,
         FormsModule,
-        NgbModule.forRoot()
+        NgbModule.forRoot(),
+        AppRoutingModule
     ],
     providers: [CoreService],
     bootstrap: [AppComponent]
