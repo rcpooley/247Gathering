@@ -9,6 +9,8 @@ import { HomeNavbarComponent } from './components/home-navbar/home-navbar.compon
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {AppRoutingModule} from "./app-routing.module";
 import { AboutUsComponent } from './components/about-us/about-us.component';
+import { ContactComponent } from './components/contact/contact.component';
+import { HomeMainComponent } from './components/home-main/home-main.component';
 
 @NgModule({
     declarations: [
@@ -16,7 +18,9 @@ import { AboutUsComponent } from './components/about-us/about-us.component';
         RegisterComponent,
         HomeComponent,
         HomeNavbarComponent,
-        AboutUsComponent
+        AboutUsComponent,
+        ContactComponent,
+        HomeMainComponent
     ],
     imports: [
         BrowserModule,

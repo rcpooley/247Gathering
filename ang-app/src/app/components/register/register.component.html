@@ -1,4 +1,4 @@
-<ng-container *ngIf="regSettings">
+<ng-container *ngIf="regSettings; else noconn">
     <div class="container">
         <h1>Register Form</h1>
         <form (submit)="onSubmit()">
@@ -74,3 +74,7 @@
         </form>
     </div>
 </ng-container>
+
+<ng-template #noconn>
+    <div>Waiting for connection</div>
+</ng-template>

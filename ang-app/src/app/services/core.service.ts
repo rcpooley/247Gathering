@@ -36,10 +36,6 @@ export class CoreService {
         this.socket = socket;
     }
 
-    public isConnected(): boolean {
-        return this.connected;
-    }
-
     public getSettings(callback: SettingsCallback) {
         if (this.settings) {
             callback(this.settings);
