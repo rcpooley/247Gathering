@@ -37,7 +37,15 @@ export class Web {
     }
 
     private routes() {
-        this.app.use(express.static('./public'));
+        this.app.get('/home/*', (req, res) => {
+            res.sendFile(__dirname + '/public/index.html');
+        });
+
+        this.app.get('/home', (req, res) => {
+            res.sendFile(__dirname + '/public/index.html');
+        });
+
+        this.app.use(express.static(__dirname + '/public'));
     }
 
     private createServer() {

@@ -13,8 +13,6 @@ import {SettingsCallback} from "247-core/dist/interfaces/callbacks";
 @Injectable()
 export class CoreService {
 
-    private baseUrl: string;
-
     private socket: SocketIOClient.Socket;
     private connected: boolean;
 
@@ -25,12 +23,11 @@ export class CoreService {
     public tmpName: string = null;
 
     constructor() {
-        this.baseUrl = 'http://localhost:80';
         this.connect();
     }
 
     private connect() {
-        let socket = socketIO('http://localhost');
+        let socket = socketIO('http://247gathering.com');
 
         socket.on('connect', () => {
             console.log('Socket connected!');
