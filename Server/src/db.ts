@@ -74,11 +74,14 @@ export class MyDB {
 
     public registerUser(firstname: string, lastname: string, email: string,
                         phone: string, howhear: number, howhearOther: string,
-                        greek: number, greekOther: string, ministry: number, ministryOther: string) {
+                        greek: number, greekOther: string, ministry: number,
+                        ministryOther: string, callback: (userID: number) => void) {
         this.conn.query('INSERT INTO user(firstName, lastName, email, phone, howhear, howhearOther, ' +
             'ministry, ministryOther, greek, greekOther) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [firstname, lastname, email, phone, howhear, howhearOther,
-            ministry, ministryOther, greek, greekOther], function (err) {
+            ministry, ministryOther, greek, greekOther], function (err, result) {
             if (err) throw err;
+
+            callback(result.insertId);
         });
     }
 
@@ -102,7 +105,33 @@ export class MyDB {
 
         this.conn.query(sql, args, function (err, results) {
             if (err) throw err;
-            callback(results);
+            callback(results.map(user => {
+                return {
+                    id: user.id,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    checkInTimeSec: 0
+                }
+            }));
+        });
+    }
+
+    public getMostRecentCheckIn(userID: number, callback: (secTime: number) => void) {
+        this.conn.query('SELECT * FROM checkin WHERE userID=? ORDER BY id DESC LIMIT 1', [userID], function (err, results) {
+            if (err) throw err;
+
+            if (results.length == 0) {
+                callback(0);
+            } else {
+                callback(results[0]['time_sec']);
+            }
+        });
+    }
+
+    public createCheckIn(userID: number, timeSec: number, callback: () => void) {
+        this.conn.query('INSERT INTO checkin(userID, time_sec) VALUES(?,?)', [userID, timeSec], function (err) {
+            if (err) throw err;
+            callback();
         });
     }
 }

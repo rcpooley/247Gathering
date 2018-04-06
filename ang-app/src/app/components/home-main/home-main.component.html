@@ -27,14 +27,22 @@
             <!-- Users found -->
             <ng-template #yesusers>
                 <div class="userlist">
-                    <div *ngFor="let a of userList" class="line">
+                    <div *ngFor="let user of userList" class="line">
                         <table>
                             <tr>
                                 <td>
-                                    {{a.firstName}} {{a.lastName}}
+                                    {{user.firstName}} {{user.lastName}}
                                 </td>
                                 <td>
-                                    <input type="button" class="btn btn-success" value="Check In"/>
+                                    <!-- Already checked in -->
+                                    <ng-container *ngIf="isCheckedIn(user); else notcheckedin">
+                                        <span class="badge badge-secondary">Checked in!</span>
+                                    </ng-container>
+
+                                    <!-- Not checked in -->
+                                    <ng-template #notcheckedin>
+                                        <input type="button" class="btn btn-success" value="Check In" (click)="doCheckIn(user.id)"/>
+                                    </ng-template>
                                 </td>
                             </tr>
                         </table>

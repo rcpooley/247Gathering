@@ -37,25 +37,7 @@ export class Web {
     }
 
     private routes() {
-        this.app.post('/register', (req, res) => {
-            let data = req.body;
-
-            let firstName = data.firstName;
-            let lastName = data.lastName;
-            let email = data.email;
-            let phone = data.phone;
-            let howhear = data.howhear;
-            let howhearOther = !!data.howhearOther ? data.howhearOther : '';
-            let greek = data.greek;
-            let greekOther = !!data.greekOther ? data.greekOther : '';
-            let ministry = data.ministry;
-            let ministryOther = !!data.ministryOther ? data.ministryOther : '';
-            this.database.registerUser(firstName, lastName, email, phone, howhear, howhearOther, greek, greekOther, ministry, ministryOther);
-
-            res.send('success');
-        });
-
-        this.app.use(express.static('../ang-app/dist'));
+        this.app.use(express.static('./public'));
     }
 
     private createServer() {

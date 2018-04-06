@@ -1,6 +1,12 @@
 import {Injectable} from '@angular/core';
 import * as socketIO from 'socket.io-client';
-import {PacketRegister, PacketSearchUsers, PacketSettings, User} from "247-core/dist/interfaces/packets";
+import {
+    PacketRegister,
+    PacketResponse,
+    PacketSearchUsers,
+    PacketSettings,
+    User
+} from "247-core/dist/interfaces/packets";
 import {MyEvents} from "247-core/dist/events";
 import {SettingsCallback} from "247-core/dist/interfaces/callbacks";
 
@@ -47,11 +53,15 @@ export class CoreService {
         }
     }
 
-    public registerUser(regInfo: PacketRegister) {
-        this.socket.emit(MyEvents.registerUser, regInfo);
+    public registerUser(regInfo: PacketRegister, callback: (resp: PacketResponse) => void) {
+        this.socket.emit(MyEvents.registerUser, regInfo, callback);
     }
 
     public searchUsers(packet: PacketSearchUsers, callback: (users: User[]) => void) {
         this.socket.emit(MyEvents.searchUsers, packet, callback);
+    }
+
+    public checkInUser(userID: number, callback: (resp: PacketResponse) => void) {
+        this.socket.emit(MyEvents.checkInUser, {userID: userID}, callback);
     }
 }

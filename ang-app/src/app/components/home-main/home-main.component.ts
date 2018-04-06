@@ -16,8 +16,6 @@ export class HomeMainComponent implements OnInit {
     constructor(private core: CoreService) {
         this.checkInQuery = '';
         this.userList = null;
-        this.userList = [{id: 1, firstName: 'Allen', lastName: 'Beeman'},
-            {id: 1, firstName: 'Robert', lastName: 'Pooley'}];
     }
 
     ngOnInit() {
@@ -41,5 +39,19 @@ export class HomeMainComponent implements OnInit {
 
     goRegister() {
         this.core.tmpName = this.checkInQuery;
+    }
+
+    doCheckIn(userID: number) {
+        this.core.checkInUser(userID, resp => {
+            if (resp.success) {
+                this.userList.forEach(user => {
+                    if (user.id === userID) user.checkInTimeSec = Math.floor(new Date().getTime() / 1000);
+                });
+            }
+        });
+    }
+
+    isCheckedIn(user: User) {
+        return Math.floor(new Date().getTime() / 1000) - user.checkInTimeSec < 60 * 60;
     }
 }
