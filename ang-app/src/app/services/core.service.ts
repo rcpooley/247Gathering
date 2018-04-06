@@ -6,12 +6,15 @@ import {
     PacketSearchUsers,
     PacketSettings,
     User
-} from "247-core/dist/interfaces/packets";
+} from "247-core/src/interfaces/packets";
 import {MyEvents} from "247-core/dist/events";
-import {SettingsCallback} from "247-core/dist/interfaces/callbacks";
+import {SettingsCallback} from "247-core/src/interfaces/callbacks";
 
 @Injectable()
 export class CoreService {
+
+    //private url: string = 'http://localhost';
+    private url: string = 'http://247gathering.com';
 
     private socket: SocketIOClient.Socket;
     private connected: boolean;
@@ -27,7 +30,7 @@ export class CoreService {
     }
 
     private connect() {
-        let socket = socketIO('http://247gathering.com');
+        let socket = socketIO(this.url);
 
         socket.on('connect', () => {
             console.log('Socket connected!');
