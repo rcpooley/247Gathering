@@ -27,7 +27,7 @@ export interface User {
     id: number;
     firstName: string;
     lastName: string;
-    checkInTimeSec: number;
+    checkedIn?: boolean;
 }
 
 export interface PacketSearchUsersResponse {

@@ -1,5 +1,6 @@
 import * as mysql from 'mysql';
 import {User} from "247-core/dist/interfaces/packets";
+import {Gathering} from "./interfaces";
 
 export class MyDB {
 
@@ -116,22 +117,29 @@ export class MyDB {
         });
     }
 
-    public getMostRecentCheckIn(userID: number, callback: (secTime: number) => void) {
-        this.conn.query('SELECT * FROM checkin WHERE userID=? ORDER BY id DESC LIMIT 1', [userID], function (err, results) {
+    public getMostRecentGathering(callback: (resp: Gathering) => void) {
+        this.conn.query('SELECT * FROM gathering ORDER BY id DESC LIMIT 1', function (err, results) {
             if (err) throw err;
 
             if (results.length == 0) {
-                callback(0);
+                callback(null);
             } else {
-                callback(results[0]['time_sec']);
+                callback(results[0]);
             }
         });
     }
 
-    public createCheckIn(userID: number, timeSec: number, callback: () => void) {
-        this.conn.query('INSERT INTO checkin(userID, time_sec) VALUES(?,?)', [userID, timeSec], function (err) {
+    public createCheckIn(gatheringID: number, userID: number, callback: () => void) {
+        this.conn.query('INSERT INTO checkin(gatheringID, userID) VALUES(?,?)', [gatheringID, userID], function (err) {
             if (err) throw err;
             callback();
+        });
+    }
+
+    public getCheckIns(gatheringID: number, callback: (ids: number[]) => void) {
+        this.conn.query('SELECT * FROM checkin WHERE gatheringID=?', [gatheringID], function (err, results) {
+            if (err) throw err;
+            callback(results.map(entry => entry.userID));
         });
     }
 }

@@ -45,13 +45,13 @@ export class HomeMainComponent implements OnInit {
         this.core.checkInUser(userID, resp => {
             if (resp.success) {
                 this.userList.forEach(user => {
-                    if (user.id === userID) user.checkInTimeSec = Math.floor(new Date().getTime() / 1000);
+                    user.checkedIn = true;
                 });
             }
         });
     }
 
     isCheckedIn(user: User) {
-        return Math.floor(new Date().getTime() / 1000) - user.checkInTimeSec < 60 * 60;
+        return user.checkedIn;
     }
 }

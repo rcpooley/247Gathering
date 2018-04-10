@@ -13,8 +13,8 @@ import {SettingsCallback} from "247-core/src/interfaces/callbacks";
 @Injectable()
 export class CoreService {
 
-    //private url: string = 'http://localhost';
-    private url: string = 'http://247gathering.com';
+    private url: string = 'http://localhost';
+    //private url: string = 'http://247gathering.com';
 
     private socket: SocketIOClient.Socket;
     private connected: boolean;

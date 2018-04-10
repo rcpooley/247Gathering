@@ -9,6 +9,7 @@ import {
     User
 } from "247-core/dist/interfaces/packets";
 import {MyEvents} from "247-core/dist/events";
+import {Gathering} from "./interfaces";
 
 export class DataSync {
 
@@ -77,25 +78,30 @@ export class DataSync {
     }
 
     private searchUsers(packet: PacketSearchUsers, callback: (users: User[]) => void) {
-        this.database.searchUsers(packet.query, (users: User[]) => {
-            //TODO fix this logic
-            if (users.length == 0) {
-                callback([]);
-            } else {
-                let user = users[0];
+        this.database.getMostRecentGathering((gathering: Gathering) => {
+            this.database.getCheckIns(gathering.id, (ids: number[]) => {
+                this.database.searchUsers(packet.query, (users: User[]) => {
+                    users.forEach(user => {
+                        user.checkedIn = ids.indexOf(user.id) >= 0;
+                    });
 
-                this.database.getMostRecentCheckIn(user.id, secTime => {
-                    user.checkInTimeSec = secTime;
-                    callback([user]);
+                    //TODO fix this logic
+                    if (users.length == 0) {
+                        callback([]);
+                    } else {
+                        callback([users[0]]);
+                    }
                 });
-            }
+            });
         });
     }
 
     private checkInUser(packet: PacketCheckIn, callback: (resp: PacketResponse) => void) {
         //TODO also fix this logic
-        this.database.createCheckIn(packet.userID, Math.floor(new Date().getTime() / 1000), () => {
-            callback({success: true});
-        })
+        this.database.getMostRecentGathering((gathering: Gathering) => {
+            this.database.createCheckIn(gathering.id, packet.userID, () => {
+                callback({success: true});
+            });
+        });
     }
 }
