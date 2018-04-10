@@ -31,8 +31,8 @@ print("Updating ang-app packages")
 shellCmd('npm update --dev', './ang-app')
 
 print("Compiling 247-core")
-shellCmd('npm update', './ang-app/node_modules/247-core')
-shellCmd('npm update', './Server/node_modules/247-core')
+shellCmd('npm run tsc', './ang-app/node_modules/247-core')
+shellCmd('npm run tsc', './Server/node_modules/247-core')
 
 print("Building frontend")
 shellCmd('npm run build', './ang-app')
