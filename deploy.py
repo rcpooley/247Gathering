@@ -11,7 +11,7 @@ def rec_compile_sass(dir):
 			rec_compile_sass(dir + '/' + file)
 	elif dir.endswith('.scss'):
 		print("Compiling " + dir)
-		os.system('sass "' + dir + '" "' + dir[:-4] + 'css')
+		os.system('sass "' + dir + '" "' + dir[:-4] + 'css"')
 		
 def shellCmd(cmd, dir):
 	p = subprocess.Popen(cmd, cwd=dir, shell=True)
