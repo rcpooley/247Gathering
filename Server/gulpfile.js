@@ -14,7 +14,7 @@ gulp.task('build', function () {
 
     let outDir = tsProject.config.compilerOptions.outDir;
 
-    gulp.src(['./src/**/*.json']).pipe(gulp.dest(outDir + '\\src'));
+    gulp.src(['./src/**/*.json']).pipe(gulp.dest(outDir + '/src'));
 
     return tsResult.js.pipe(gulp.dest(outDir));
 });
