@@ -43,6 +43,10 @@ gulp.task('server', function () {
     });
 });
 
+gulp.task('cleanbuild', [], function () {
+    runSequence('clean', 'build');
+});
+
 gulp.task('default', ['server'], function () {
     gulp.watch(['src/**/*'], ['server']);
 });
