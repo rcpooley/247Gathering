@@ -19,6 +19,9 @@ export class CoreService {
     private socket: SocketIOClient.Socket;
     private connected: boolean;
 
+    /** Admin stuff **/
+    public loggedIn: boolean = false;
+
     //Cached responses
     private settings: PacketSettings;
 

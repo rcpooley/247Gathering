@@ -1,6 +1,8 @@
 import * as express from 'express';
 import * as http from 'http';
 import * as bodyParser from 'body-parser';
+import * as expressSession from 'express-session';
+import * as sharedsession from 'express-socket.io-session';
 import * as socketIO from 'socket.io';
 import {MyDB} from "./db";
 import {DataSync} from "./datasync";
@@ -11,6 +13,7 @@ export class Web {
     private app: express.Application;
     private server: http.Server;
     private database: MyDB;
+    private session: any;
 
     constructor() {
         this.setupDatabase();
@@ -34,15 +37,28 @@ export class Web {
     private middleware() {
         this.app.use(bodyParser.urlencoded({extended: true}));
         this.app.use(bodyParser.json());
+
+        this.session = expressSession({
+            secret: config['session-secret'],
+            resave: true,
+            saveUninitialized: true,
+            cookie: {secure: false}
+        });
+
+        this.app.use(this.session);
     }
 
     private routes() {
-        this.app.get('/home/*', (req, res) => {
-            res.sendFile(__dirname + '/public/index.html');
-        });
+        let roots = ['home', 'admin'];
 
-        this.app.get('/home', (req, res) => {
-            res.sendFile(__dirname + '/public/index.html');
+        roots.forEach(root => {
+            this.app.get(`/${root}/*`, (req, res) => {
+                res.sendFile(__dirname + '/public/index.html');
+            });
+
+            this.app.get(`/${root}`, (req, res) => {
+                res.sendFile(__dirname + '/public/index.html');
+            });
         });
 
         this.app.use(express.static(__dirname + '/public'));
@@ -54,6 +70,10 @@ export class Web {
 
     private initDataSync() {
         let io: SocketIO.Server = socketIO(this.server);
+
+        io.use(sharedsession(this.session, {
+            autoSave: true
+        }));
 
         let datasync = new DataSync(this.database);
 
