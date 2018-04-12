@@ -1,10 +1,8 @@
 import * as express from 'express';
 import * as http from 'http';
 import * as bodyParser from 'body-parser';
-import * as expressSession from 'express-session';
-import * as sharedsession from 'express-socket.io-session';
 import * as socketIO from 'socket.io';
-import * as cors from 'cors';
+import SocketIOStatic = require("socket.io");
 import {MyDB} from "./db";
 import {DataSync} from "./datasync";
 
@@ -14,7 +12,6 @@ export class Web {
     private app: express.Application;
     private server: http.Server;
     private database: MyDB;
-    private session: any;
 
     constructor() {
         this.setupDatabase();
@@ -38,26 +35,10 @@ export class Web {
     private middleware() {
         this.app.use(bodyParser.urlencoded({extended: true}));
         this.app.use(bodyParser.json());
-
-        this.session = expressSession({
-            secret: config['session-secret'],
-            resave: true,
-            saveUninitialized: true,
-            cookie: {secure: false}
-        });
-
-        this.app.use(this.session);
-
-        this.app.use(cors());
     }
 
     private routes() {
         let roots = ['home', 'admin'];
-
-        this.app.use((req, res, next) => {
-            console.log('session', req.session);
-            next();
-        });
 
         roots.forEach(root => {
             this.app.get(`/${root}/*`, (req, res) => {
@@ -77,15 +58,11 @@ export class Web {
     }
 
     private initDataSync() {
-        let io: SocketIO.Server = socketIO(this.server);
-
-        io.use(sharedsession(this.session, {
-            autoSave: true
-        }));
+        let io: SocketIOStatic.Server = socketIO(this.server);
 
         let datasync = new DataSync(this.database);
 
-        io.on('connect', (socket: SocketIO.Socket) => {
+        io.on('connect', (socket: SocketIOStatic.Socket) => {
             datasync.addSocket(socket);
         });
     }

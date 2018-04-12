@@ -11,12 +11,27 @@ import {
 import {MyEvents} from "247-core/dist/events";
 import {Gathering} from "./interfaces";
 import SocketIOStatic = require("socket.io");
+import * as jwt from 'jsonwebtoken';
 
 let config = require('./config.json');
 
 export class DataSync {
 
     constructor(private database: MyDB) {
+    }
+
+    public jwtEncode(data: any): any {
+        return jwt.sign({
+            data: data
+        }, config['jwt-secret'], {expiresIn: config['jwt-expires']});
+    }
+
+    public jwtDecode(encoded: any): any {
+        try {
+            return jwt.verify(encoded, config['jwt-secret']);
+        } catch (err) {
+            return {err: err};
+        }
     }
 
     public addSocket(socket: SocketIOStatic.Socket): void {
@@ -36,14 +51,7 @@ export class DataSync {
             this.checkInUser(packet, callback);
         });
 
-        socket.on(MyEvents.adminLogin, (password: string, callback: (loggedIn: boolean) => void) => {
-            this.adminLogin(socket, password, callback);
-        });
-    }
-
-    private session(socket: SocketIOStatic.Socket) {
-        let handshake: any = socket.handshake;
-        return handshake.session;
+        this.adminEvents(socket);
     }
 
     private getAllSettings(callback: SettingsCallback) {
@@ -117,17 +125,24 @@ export class DataSync {
         });
     }
 
-    private adminLogin(socket: SocketIOStatic.Socket, password: string, callback: (loggedIn: boolean) => void) {
-        let session = this.session(socket);
-        console.log('cur val', session.loggedIn);
+    private adminEvents(socket: SocketIOStatic.Socket) {
+        socket.on(MyEvents.adminVerify, (token: string, callback: (loggedIn: boolean) => void) => {
+            let decoded = this.jwtDecode(token);
 
-        if (password === '!') {
-            callback(!!session.loggedIn);
-        } else {
-            session.loggedIn = password === config['admin-password'];
-            session.save();
-            console.log('new val',session.loggedIn);
-            callback(!!session.loggedIn);
-        }
+            if (!!decoded.err) {
+                callback(false);
+            } else {
+                callback(!!decoded.data && !!decoded.data.loggedIn);
+            }
+        });
+
+        socket.on(MyEvents.adminLogin, (password: string, callback: (newToken: any) => void) => {
+            if (password === config['admin-password']) {
+                let token = this.jwtEncode({loggedIn: true});
+                callback(token);
+            } else {
+                callback(null);
+            }
+        });
     }
 }

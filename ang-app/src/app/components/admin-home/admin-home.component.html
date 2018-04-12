@@ -1,4 +1,4 @@
-Logged in: {{core.loggedIn}}
+Logged in: {{core.token != null}}
 <form action="#" (submit)="login()">
     <input [(ngModel)]="password" type="password" name="pass"/>
     <input type="submit" value="Login"/>

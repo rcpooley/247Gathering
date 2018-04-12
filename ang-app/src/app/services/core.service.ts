@@ -20,7 +20,7 @@ export class CoreService {
     private connected: boolean;
 
     /** Admin stuff **/
-    public loggedIn: boolean = false;
+    public token: any = null;
 
     //Cached responses
     private settings: PacketSettings;
@@ -29,6 +29,9 @@ export class CoreService {
     public tmpName: string = null;
 
     constructor() {
+        //Check for cookie
+        this.token = this.getCookie('token');
+
         this.connect();
     }
 
@@ -38,7 +41,12 @@ export class CoreService {
         socket.on('connect', () => {
             console.log('Socket connected!');
             this.connected = true;
-            this.adminLogin('!');
+            socket.emit(MyEvents.adminVerify, this.token, loggedIn => {
+                if (!loggedIn) {
+                    this.token = null;
+                    this.deleteCookie('token');
+                }
+            });
         });
 
         socket.on('disconnect', () => {
@@ -47,6 +55,33 @@ export class CoreService {
         });
 
         this.socket = socket;
+    }
+
+    private setCookie(cname: string, cvalue: string, exdays: number) {
+        let d = new Date();
+        d.setTime(d.getTime() + (exdays*24*60*60*1000));
+        let expires = "expires="+ d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    }
+
+    private getCookie(cname: string): string {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for(let i = 0; i <ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return null;
+    }
+
+    private deleteCookie(cname: string) {
+        this.setCookie(cname, '', -1);
     }
 
     public getSettings(callback: SettingsCallback) {
@@ -70,9 +105,14 @@ export class CoreService {
     }
 
     public adminLogin(password: string, callback?: (loggedIn: boolean) => void) {
-        this.socket.emit(MyEvents.adminLogin, password, (loggedIn: boolean) => {
-            this.loggedIn = loggedIn;
-            if (callback) callback(loggedIn);
+        this.socket.emit(MyEvents.adminLogin, password, (token: string) => {
+            this.token = token;
+            if (this.token != null) {
+                this.setCookie('token', token, 365);
+            } else {
+                this.deleteCookie('token');
+            }
+            if (callback) callback(this.token != null)
         });
     }
 }
