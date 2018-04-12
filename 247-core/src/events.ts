@@ -5,4 +5,6 @@ export class MyEvents {
     static checkInUser: string = 'checkInUser';
     static adminVerify: string = 'adminVerify';
     static adminLogin: string = 'adminLogin';
+    static adminGetUsers: string = 'adminGetUsers';
+    static adminGetGatherings: string = 'adminGetGatherings';
 }

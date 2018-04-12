@@ -128,5 +128,26 @@ export class DataSync {
                 callback(null);
             }
         });
+
+        socket.on(MyEvents.adminGetUsers, (callback: (users: User[]) => void) => {
+            this.database.getUsers(callback);
+        });
+
+        socket.on(MyEvents.adminGetGatherings, (callback: (gatherings: Gathering[]) => void) => {
+            this.database.getGatherings((gatherings: Gathering[]) => {
+                let proms = gatherings.map(gathering => {
+                    return new Promise(resolve => {
+                        this.database.getCheckIns(gathering.id, ids => {
+                            gathering.users = ids;
+                            resolve();
+                        });
+                    });
+                });
+
+                Promise.all(proms).then(() => {
+                    callback(gatherings);
+                });
+            });
+        });
     }
 }

@@ -140,14 +140,14 @@ export class MyDB {
     }
 
     public getGatherings(callback: (gatherings: Gathering[]) => void) {
-        this.conn.query('SELECT * FROM gatherings', (err, results) => {
+        this.conn.query('SELECT * FROM gathering', (err, results) => {
             if (err) throw err;
             callback(results);
         });
     }
 
     public getUsers(callback: (users: User[]) => void) {
-        this.conn.query('SELECT * FROM users', (err, results) => {
+        this.conn.query('SELECT * FROM user', (err, results) => {
             if (err) throw err;
             callback(results);
         })

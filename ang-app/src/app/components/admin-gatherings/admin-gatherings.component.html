@@ -1,3 +1,24 @@
-<p>
-  admin-gatherings works!
-</p>
+<h2>Gatherings</h2>
+<ng-container *ngIf="gatherings; else nogatherings">
+    <table id="gatheringTable">
+        <tr>
+            <th>ID</th>
+            <th>Time</th>
+            <th>People Who Attended</th>
+        </tr>
+        <tr *ngFor="let gathering of gatherings">
+            <td>{{gathering.id}}</td>
+            <td>{{gathering.time}}</td>
+            <td>
+                <ng-container *ngIf="users">
+                    <span *ngFor="let uid of gathering.users">
+                        {{users[uid].firstName}} {{users[uid].lastName}};
+                    </span>
+                </ng-container>
+            </td>
+        </tr>
+    </table>
+</ng-container>
+<ng-template #nogatherings>
+    Loading gatherings...
+</ng-template>

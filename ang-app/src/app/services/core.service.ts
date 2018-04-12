@@ -4,6 +4,7 @@ import {PacketSettings} from "247-core/src/interfaces/packets";
 import {MyEvents} from "247-core/dist/events";
 import {SettingsCallback} from "247-core/src/interfaces/callbacks";
 import {User} from "247-core/src/interfaces/user";
+import {Gathering} from "../../../../247-core/src/interfaces/gathering";
 
 @Injectable()
 export class CoreService {
@@ -109,5 +110,13 @@ export class CoreService {
             }
             if (callback) callback(this.token != null)
         });
+    }
+
+    public adminGetUsers(callback: (users: User[]) => void) {
+        this.socket.emit(MyEvents.adminGetUsers, callback);
+    }
+
+    public adminGetGatherings(callback: (gatherings: Gathering[]) => void) {
+        this.socket.emit(MyEvents.adminGetGatherings, callback);
     }
 }
