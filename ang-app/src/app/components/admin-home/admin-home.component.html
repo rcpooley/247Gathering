@@ -1,3 +1,5 @@
-<p>
-  admin-home works!
-</p>
+Logged in: {{core.loggedIn}}
+<form action="#" (submit)="login()">
+    <input [(ngModel)]="password" type="password" name="pass"/>
+    <input type="submit" value="Login"/>
+</form>

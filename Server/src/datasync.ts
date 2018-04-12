@@ -10,13 +10,16 @@ import {
 } from "247-core/dist/interfaces/packets";
 import {MyEvents} from "247-core/dist/events";
 import {Gathering} from "./interfaces";
+import SocketIOStatic = require("socket.io");
+
+let config = require('./config.json');
 
 export class DataSync {
 
     constructor(private database: MyDB) {
     }
 
-    public addSocket(socket: SocketIO.Socket): void {
+    public addSocket(socket: SocketIOStatic.Socket): void {
         socket.on(MyEvents.fetchSettings, (callback: SettingsCallback) => {
             this.getAllSettings(callback);
         });
@@ -32,6 +35,15 @@ export class DataSync {
         socket.on(MyEvents.checkInUser, (packet: PacketCheckIn, callback: (resp: PacketResponse) => void) => {
             this.checkInUser(packet, callback);
         });
+
+        socket.on(MyEvents.adminLogin, (password: string, callback: (loggedIn: boolean) => void) => {
+            this.adminLogin(socket, password, callback);
+        });
+    }
+
+    private session(socket: SocketIOStatic.Socket) {
+        let handshake: any = socket.handshake;
+        return handshake.session;
     }
 
     private getAllSettings(callback: SettingsCallback) {
@@ -103,5 +115,19 @@ export class DataSync {
                 callback({success: true});
             });
         });
+    }
+
+    private adminLogin(socket: SocketIOStatic.Socket, password: string, callback: (loggedIn: boolean) => void) {
+        let session = this.session(socket);
+        console.log('cur val', session.loggedIn);
+
+        if (password === '!') {
+            callback(!!session.loggedIn);
+        } else {
+            session.loggedIn = password === config['admin-password'];
+            session.save();
+            console.log('new val',session.loggedIn);
+            callback(!!session.loggedIn);
+        }
     }
 }

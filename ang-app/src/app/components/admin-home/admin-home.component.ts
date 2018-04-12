@@ -1,16 +1,21 @@
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
+import {CoreService} from "../../services/core.service";
 
 @Component({
     selector: 'admin-home',
     templateUrl: './admin-home.component.html',
     styleUrls: ['./admin-home.component.css']
 })
-export class AdminHomeComponent implements OnInit {
+export class AdminHomeComponent {
 
-    constructor() {
+    public password: string;
+
+    constructor(public core: CoreService) {
+        this.password = '';
     }
 
-    ngOnInit() {
+    login() {
+        this.core.adminLogin(this.password);
+        this.password = '';
     }
-
 }

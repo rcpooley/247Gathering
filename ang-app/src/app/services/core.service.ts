@@ -38,6 +38,7 @@ export class CoreService {
         socket.on('connect', () => {
             console.log('Socket connected!');
             this.connected = true;
+            this.adminLogin('!');
         });
 
         socket.on('disconnect', () => {
@@ -66,5 +67,12 @@ export class CoreService {
 
     public checkInUser(userID: number, callback: (resp: PacketResponse) => void) {
         this.socket.emit(MyEvents.checkInUser, {userID: userID}, callback);
+    }
+
+    public adminLogin(password: string, callback?: (loggedIn: boolean) => void) {
+        this.socket.emit(MyEvents.adminLogin, password, (loggedIn: boolean) => {
+            this.loggedIn = loggedIn;
+            if (callback) callback(loggedIn);
+        });
     }
 }

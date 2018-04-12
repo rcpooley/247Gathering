@@ -4,6 +4,7 @@ import * as bodyParser from 'body-parser';
 import * as expressSession from 'express-session';
 import * as sharedsession from 'express-socket.io-session';
 import * as socketIO from 'socket.io';
+import * as cors from 'cors';
 import {MyDB} from "./db";
 import {DataSync} from "./datasync";
 
@@ -46,10 +47,17 @@ export class Web {
         });
 
         this.app.use(this.session);
+
+        this.app.use(cors());
     }
 
     private routes() {
         let roots = ['home', 'admin'];
+
+        this.app.use((req, res, next) => {
+            console.log('session', req.session);
+            next();
+        });
 
         roots.forEach(root => {
             this.app.get(`/${root}/*`, (req, res) => {
