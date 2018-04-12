@@ -1,5 +1,11 @@
-Logged in: {{core.token != null}}
-<form action="#" (submit)="login()">
-    <input [(ngModel)]="password" type="password" name="pass"/>
-    <input type="submit" value="Login"/>
-</form>
+<ng-container *ngIf="core.token == null; else loggedIn">
+    Admin login
+    <form action="#" (submit)="login()">
+        <input [(ngModel)]="password" type="password" name="pass"/>
+        <input type="submit" value="Login"/>
+    </form>
+</ng-container>
+<ng-template #loggedIn>
+    You are logged in!<br>
+    <button (click)="logout()">Logout</button>
+</ng-template>

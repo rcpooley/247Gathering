@@ -18,4 +18,9 @@ export class AdminHomeComponent {
         this.core.adminLogin(this.password);
         this.password = '';
     }
+
+    logout() {
+        this.password = '';
+        this.core.adminLogin(this.password);
+    }
 }
