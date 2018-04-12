@@ -1,14 +1,9 @@
 import {Injectable} from '@angular/core';
 import * as socketIO from 'socket.io-client';
-import {
-    PacketRegister,
-    PacketResponse,
-    PacketSearchUsers,
-    PacketSettings,
-    User
-} from "247-core/src/interfaces/packets";
+import {PacketSettings} from "247-core/src/interfaces/packets";
 import {MyEvents} from "247-core/dist/events";
 import {SettingsCallback} from "247-core/src/interfaces/callbacks";
+import {User} from "247-core/src/interfaces/user";
 
 @Injectable()
 export class CoreService {
@@ -92,16 +87,16 @@ export class CoreService {
         }
     }
 
-    public registerUser(regInfo: PacketRegister, callback: (resp: PacketResponse) => void) {
+    public registerUser(regInfo: User, callback: (success: boolean) => void) {
         this.socket.emit(MyEvents.registerUser, regInfo, callback);
     }
 
-    public searchUsers(packet: PacketSearchUsers, callback: (users: User[]) => void) {
-        this.socket.emit(MyEvents.searchUsers, packet, callback);
+    public searchUsers(query: string, callback: (users: User[]) => void) {
+        this.socket.emit(MyEvents.searchUsers, query, callback);
     }
 
-    public checkInUser(userID: number, callback: (resp: PacketResponse) => void) {
-        this.socket.emit(MyEvents.checkInUser, {userID: userID}, callback);
+    public checkInUser(userID: number, callback: (success: boolean) => void) {
+        this.socket.emit(MyEvents.checkInUser, userID, callback);
     }
 
     public adminLogin(password: string, callback?: (loggedIn: boolean) => void) {

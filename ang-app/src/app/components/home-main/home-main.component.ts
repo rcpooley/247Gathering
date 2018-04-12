@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {CoreService} from "../../services/core.service";
-import {User} from "247-core/dist/interfaces/packets";
+import {User} from "247-core/src/interfaces/user";
 
 @Component({
     selector: 'home-main',
@@ -31,7 +31,7 @@ export class HomeMainComponent implements OnInit {
 
     doSearchUsers() {
         if (this.checkInQuery.length > 0) {
-            this.core.searchUsers({query: this.checkInQuery}, users => {
+            this.core.searchUsers(this.checkInQuery, users => {
                 this.userList = users;
             });
         }
@@ -42,8 +42,8 @@ export class HomeMainComponent implements OnInit {
     }
 
     doCheckIn(userID: number) {
-        this.core.checkInUser(userID, resp => {
-            if (resp.success) {
+        this.core.checkInUser(userID, success => {
+            if (success) {
                 this.userList.forEach(user => {
                     user.checkedIn = true;
                 });

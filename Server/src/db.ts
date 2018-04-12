@@ -1,6 +1,6 @@
 import * as mysql from 'mysql';
-import {User} from "247-core/dist/interfaces/packets";
-import {Gathering} from "./interfaces";
+import {Gathering} from "247-core/src/interfaces/gathering";
+import {User} from "247-core/src/interfaces/user";
 
 export class MyDB {
 
@@ -73,15 +73,11 @@ export class MyDB {
         });
     }
 
-    public registerUser(firstname: string, lastname: string, email: string,
-                        phone: string, howhear: number, howhearOther: string,
-                        greek: number, greekOther: string, ministry: number,
-                        ministryOther: string, callback: (userID: number) => void) {
+    public registerUser(user: User, callback: (userID: number) => void) {
         this.conn.query('INSERT INTO user(firstName, lastName, email, phone, howhear, howhearOther, ' +
-            'ministry, ministryOther, greek, greekOther) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [firstname, lastname, email, phone, howhear, howhearOther,
-            ministry, ministryOther, greek, greekOther], function (err, result) {
+            'ministry, ministryOther, greek, greekOther) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [user.firstName, user.lastName, user.email, user.phone,
+            user.howhear, user.howhearOther, user.ministry, user.ministryOther, user.greek, user.greekOther], (err, result) => {
             if (err) throw err;
-
             callback(result.insertId);
         });
     }
@@ -141,5 +137,19 @@ export class MyDB {
             if (err) throw err;
             callback(results.map(entry => entry.userID));
         });
+    }
+
+    public getGatherings(callback: (gatherings: Gathering[]) => void) {
+        this.conn.query('SELECT * FROM gatherings', (err, results) => {
+            if (err) throw err;
+            callback(results);
+        });
+    }
+
+    public getUsers(callback: (users: User[]) => void) {
+        this.conn.query('SELECT * FROM users', (err, results) => {
+            if (err) throw err;
+            callback(results);
+        })
     }
 }

@@ -1,8 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {CoreService} from '../../services/core.service';
-import {PacketRegister, PacketSettings} from '247-core/dist/interfaces/packets';
-import {Entry} from "247-core/dist/interfaces/entry";
+import {Entry} from "247-core/src/interfaces/entry";
 import {Router} from "@angular/router";
+import {PacketSettings} from '247-core/dist/interfaces/packets';
+import {User} from "247-core/src/interfaces/user";
 
 @Component({
     selector: 'app-register',
@@ -11,12 +12,13 @@ import {Router} from "@angular/router";
 })
 export class RegisterComponent implements OnInit {
 
-    regForm: PacketRegister;
+    regForm: User;
     regSettings: PacketSettings;
 
     constructor(public core: CoreService,
                 private router: Router) {
         this.regForm = {
+            id: -1,
             firstName: '',
             lastName: '',
             email: '',

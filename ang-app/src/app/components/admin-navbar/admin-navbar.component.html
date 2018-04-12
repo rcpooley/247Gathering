@@ -1,0 +1,26 @@
+<nav class="navbar navbar-expand-sm navbar-light bg-light fixed-top">
+    <!-- Brand -->
+    <a class="navbar-brand">247 Admin</a>
+
+    <!-- Toggle button -->
+    <button class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#myNavbarCollapse" aria-controls="myNavbarCollapse"
+            aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Navbar content -->
+    <div class="collapse navbar-collapse" id="myNavbarCollapse">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" [routerLink]="['./users']">Users</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" [routerLink]="['./gatherings']">Gatherings</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" (click)="logout()" style="cursor: pointer;">Logout</a>
+            </li>
+        </ul>
+    </div>
+</nav>

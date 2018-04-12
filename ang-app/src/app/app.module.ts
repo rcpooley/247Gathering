@@ -12,6 +12,9 @@ import { AboutUsComponent } from './components/about-us/about-us.component';
 import { ContactComponent } from './components/contact/contact.component';
 import { HomeMainComponent } from './components/home-main/home-main.component';
 import { AdminHomeComponent } from './components/admin-home/admin-home.component';
+import { AdminNavbarComponent } from './components/admin-navbar/admin-navbar.component';
+import { AdminUsersComponent } from './components/admin-users/admin-users.component';
+import { AdminGatheringsComponent } from './components/admin-gatherings/admin-gatherings.component';
 
 @NgModule({
     declarations: [
@@ -22,7 +25,10 @@ import { AdminHomeComponent } from './components/admin-home/admin-home.component
         AboutUsComponent,
         ContactComponent,
         HomeMainComponent,
-        AdminHomeComponent
+        AdminHomeComponent,
+        AdminNavbarComponent,
+        AdminUsersComponent,
+        AdminGatheringsComponent
     ],
     imports: [
         BrowserModule,

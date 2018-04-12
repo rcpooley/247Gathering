@@ -1,17 +1,11 @@
 import {MyDB} from "./db";
-import {SettingsCallback} from "247-core/dist/interfaces/callbacks";
-import {
-    PacketCheckIn,
-    PacketRegister,
-    PacketResponse,
-    PacketSearchUsers,
-    PacketSettings,
-    User
-} from "247-core/dist/interfaces/packets";
+import {SettingsCallback} from "247-core/src/interfaces/callbacks";
+import {PacketSettings} from "247-core/src/interfaces/packets";
 import {MyEvents} from "247-core/dist/events";
-import {Gathering} from "./interfaces";
 import SocketIOStatic = require("socket.io");
 import * as jwt from 'jsonwebtoken';
+import {User} from "247-core/src/interfaces/user";
+import {Gathering} from "247-core/src/interfaces/gathering";
 
 let config = require('./config.json');
 
@@ -35,26 +29,18 @@ export class DataSync {
     }
 
     public addSocket(socket: SocketIOStatic.Socket): void {
-        socket.on(MyEvents.fetchSettings, (callback: SettingsCallback) => {
-            this.getAllSettings(callback);
-        });
+        let events: string[] = [MyEvents.fetchSettings, MyEvents.registerUser, MyEvents.searchUsers, MyEvents.checkInUser];
 
-        socket.on(MyEvents.registerUser, (regInfo: PacketRegister, callback: (resp: PacketResponse) => void) => {
-            this.registerUser(regInfo, callback);
-        });
-
-        socket.on(MyEvents.searchUsers, (packet: PacketSearchUsers, callback: (users: User[]) => void) => {
-            this.searchUsers(packet, callback);
-        });
-
-        socket.on(MyEvents.checkInUser, (packet: PacketCheckIn, callback: (resp: PacketResponse) => void) => {
-            this.checkInUser(packet, callback);
+        events.forEach(event => {
+            socket.on(event, (...args) => {
+                this[event](...args);
+            });
         });
 
         this.adminEvents(socket);
     }
 
-    private getAllSettings(callback: SettingsCallback) {
+    private fetchSettings(callback: SettingsCallback) {
         let proms = [];
 
         proms.push(new Promise(resolve => {
@@ -78,29 +64,27 @@ export class DataSync {
         });
     }
 
-    private registerUser(regInfo: PacketRegister, callback: (resp: PacketResponse) => void) {
+    private registerUser(user: User, callback: (success: boolean) => void) {
         //Verify info
-        let keys = Object.keys(regInfo);
+        let keys = Object.keys(user);
         for (let i = 0; i < keys.length; i++) {
             if (keys[i].endsWith("Other")) continue;
 
-            let val = regInfo[keys[i]];
+            let val = user[keys[i]];
 
             if (!isNaN(parseInt(val))) continue;
             if (val.length == 0) return;
         }
 
-        this.database.registerUser(regInfo.firstName, regInfo.lastName, regInfo.email,
-            regInfo.phone, regInfo.howhear, regInfo.howhearOther, regInfo.greek,
-            regInfo.greekOther, regInfo.ministry, regInfo.ministryOther, userID => {
-                this.checkInUser({userID: userID}, callback);
-            });
+        this.database.registerUser(user, userID => {
+            this.checkInUser(userID, callback);
+        });
     }
 
-    private searchUsers(packet: PacketSearchUsers, callback: (users: User[]) => void) {
+    private searchUsers(query: string, callback: (users: User[]) => void) {
         this.database.getMostRecentGathering((gathering: Gathering) => {
             this.database.getCheckIns(gathering.id, (ids: number[]) => {
-                this.database.searchUsers(packet.query, (users: User[]) => {
+                this.database.searchUsers(query, (users: User[]) => {
                     users.forEach(user => {
                         user.checkedIn = ids.indexOf(user.id) >= 0;
                     });
@@ -116,11 +100,11 @@ export class DataSync {
         });
     }
 
-    private checkInUser(packet: PacketCheckIn, callback: (resp: PacketResponse) => void) {
+    private checkInUser(userID: number, callback: (success: boolean) => void) {
         //TODO also fix this logic
         this.database.getMostRecentGathering((gathering: Gathering) => {
-            this.database.createCheckIn(gathering.id, packet.userID, () => {
-                callback({success: true});
+            this.database.createCheckIn(gathering.id, userID, () => {
+                callback(true);
             });
         });
     }
