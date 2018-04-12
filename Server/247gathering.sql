@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Apr 06, 2018 at 02:34 AM
+-- Generation Time: Apr 12, 2018 at 04:59 AM
 -- Server version: 5.7.19
 -- PHP Version: 5.6.31
 
@@ -25,6 +25,35 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `checkin`
+--
+
+DROP TABLE IF EXISTS `checkin`;
+CREATE TABLE IF NOT EXISTS `checkin` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `gatheringID` int(11) NOT NULL,
+  `userID` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_user_id` (`userID`),
+  KEY `fk_gathering_id` (`gatheringID`)
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `gathering`
+--
+
+DROP TABLE IF EXISTS `gathering`;
+CREATE TABLE IF NOT EXISTS `gathering` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `time` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `greek`
 --
 
@@ -33,17 +62,14 @@ CREATE TABLE IF NOT EXISTS `greek` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(32) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `greek`
 --
 
 INSERT INTO `greek` (`id`, `name`) VALUES
-(-1, 'Other'),
-(1, 'ZBT'),
-(2, 'Alpha Theta'),
-(3, 'SD');
+(-1, 'Other');
 
 -- --------------------------------------------------------
 
@@ -56,17 +82,14 @@ CREATE TABLE IF NOT EXISTS `howhear` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(256) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `howhear`
 --
 
 INSERT INTO `howhear` (`id`, `name`) VALUES
-(-1, 'Other'),
-(1, 'Friend'),
-(2, 'Just walked in'),
-(3, 'God');
+(-1, 'Other');
 
 -- --------------------------------------------------------
 
@@ -79,25 +102,23 @@ CREATE TABLE IF NOT EXISTS `ministry` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(256) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `ministry`
 --
 
 INSERT INTO `ministry` (`id`, `name`) VALUES
-(-1, 'Other'),
-(1, 'CCF'),
-(2, 'CRU');
+(-1, 'Other');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `songs`
+-- Table structure for table `song`
 --
 
-DROP TABLE IF EXISTS `songs`;
-CREATE TABLE IF NOT EXISTS `songs` (
+DROP TABLE IF EXISTS `song`;
+CREATE TABLE IF NOT EXISTS `song` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(512) NOT NULL,
   `data` text NOT NULL,
@@ -127,11 +148,18 @@ CREATE TABLE IF NOT EXISTS `user` (
   KEY `ministry` (`ministry`),
   KEY `greek` (`greek`),
   KEY `howhear` (`howhear`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
 
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `checkin`
+--
+ALTER TABLE `checkin`
+  ADD CONSTRAINT `fk_gathering_id` FOREIGN KEY (`gatheringID`) REFERENCES `gathering` (`id`),
+  ADD CONSTRAINT `fk_user_id` FOREIGN KEY (`userID`) REFERENCES `user` (`id`);
 
 --
 -- Constraints for table `user`
