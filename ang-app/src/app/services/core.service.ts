@@ -4,7 +4,8 @@ import {PacketSettings} from "247-core/src/interfaces/packets";
 import {MyEvents} from "247-core/dist/events";
 import {SettingsCallback} from "247-core/src/interfaces/callbacks";
 import {User} from "247-core/src/interfaces/user";
-import {Gathering} from "../../../../247-core/src/interfaces/gathering";
+import {Gathering} from "247-core/src/interfaces/gathering";
+import {Song} from "247-core/src/interfaces/song";
 
 @Injectable()
 export class CoreService {
@@ -126,5 +127,13 @@ export class CoreService {
 
     public adminNewGathering(time: number, callback: () => void) {
         this.adminEvent(MyEvents.adminNewGathering, time, callback);
+    }
+
+    public adminGetSongs(callback: (songs: Song[]) => void) {
+        this.adminEvent(MyEvents.adminGetSongs, callback);
+    }
+
+    public adminAddSong(title: string, callback: () => void) {
+        this.adminEvent(MyEvents.adminNewSong, title, callback);
     }
 }

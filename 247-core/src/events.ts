@@ -8,4 +8,6 @@ export class MyEvents {
     static adminGetUsers: string = 'adminGetUsers';
     static adminGetGatherings: string = 'adminGetGatherings';
     static adminNewGathering: string = 'adminNewGathering';
+    static adminGetSongs: string = 'adminGetSongs';
+    static adminNewSong: string = 'adminNewSong';
 }

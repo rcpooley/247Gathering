@@ -15,6 +15,7 @@ import { AdminHomeComponent } from './components/admin-home/admin-home.component
 import { AdminNavbarComponent } from './components/admin-navbar/admin-navbar.component';
 import { AdminUsersComponent } from './components/admin-users/admin-users.component';
 import { AdminGatheringsComponent } from './components/admin-gatherings/admin-gatherings.component';
+import { AdminSongsComponent } from './components/admin-songs/admin-songs.component';
 
 @NgModule({
     declarations: [
@@ -28,7 +29,8 @@ import { AdminGatheringsComponent } from './components/admin-gatherings/admin-ga
         AdminHomeComponent,
         AdminNavbarComponent,
         AdminUsersComponent,
-        AdminGatheringsComponent
+        AdminGatheringsComponent,
+        AdminSongsComponent
     ],
     imports: [
         BrowserModule,

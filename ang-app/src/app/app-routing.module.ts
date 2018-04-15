@@ -8,6 +8,7 @@ import {HomeMainComponent} from "./components/home-main/home-main.component";
 import {AdminHomeComponent} from "./components/admin-home/admin-home.component";
 import {AdminUsersComponent} from "./components/admin-users/admin-users.component";
 import {AdminGatheringsComponent} from "./components/admin-gatherings/admin-gatherings.component";
+import {AdminSongsComponent} from "./components/admin-songs/admin-songs.component";
 
 const routes: Routes = [
     {path: '', redirectTo: 'home', pathMatch: 'full'},
@@ -27,7 +28,8 @@ const routes: Routes = [
         children: [
             {path: '', redirectTo: 'users', pathMatch: 'full'},
             {path: 'users', component: AdminUsersComponent},
-            {path: 'gatherings', component: AdminGatheringsComponent}
+            {path: 'gatherings', component: AdminGatheringsComponent},
+            {path: 'songs', component: AdminSongsComponent}
         ]
     },
     {path: '**', redirectTo: 'home'}

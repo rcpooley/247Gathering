@@ -1,0 +1,20 @@
+<h2>Songs</h2>
+<ng-container *ngIf="songs; else nosongs">
+    <table id="songTable">
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+        </tr>
+        <tr *ngFor="let song of songs">
+            <td>{{song.id}}</td>
+            <td>{{song.title}}</td>
+        </tr>
+    </table>
+    <br>
+    <h4>Add Song</h4>
+    <input [(ngModel)]="newSongTitle" type="text" placeholder="Song Title"/>
+    <button (click)="addSong()">Add Song</button>
+</ng-container>
+<ng-template #nosongs>
+    Loading songs...
+</ng-template>

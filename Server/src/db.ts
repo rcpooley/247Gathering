@@ -1,6 +1,7 @@
 import * as mysql from 'mysql';
 import {Gathering} from "247-core/src/interfaces/gathering";
 import {User} from "247-core/src/interfaces/user";
+import {Song} from "247-core/src/interfaces/song";
 
 export class MyDB {
 
@@ -155,6 +156,20 @@ export class MyDB {
 
     public newGathering(time: number, callback: () => void) {
         this.conn.query('INSERT INTO gathering(time) VALUES(?)', [time], (err, result) => {
+            if (err) throw err;
+            callback();
+        });
+    }
+
+    public getSongs(callback: (songs: Song[]) => void) {
+        this.conn.query('SELECT * FROM song', (err, results) => {
+            if (err) throw err;
+            callback(results);
+        });
+    }
+
+    public addSong(title: string, callback: () => void) {
+        this.conn.query('INSERT INTO song(title) VALUES(?)', [title], (err, result) => {
             if (err) throw err;
             callback();
         });

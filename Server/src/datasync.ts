@@ -7,6 +7,7 @@ import * as jwt from 'jsonwebtoken';
 import {User} from "247-core/src/interfaces/user";
 import {Gathering} from "247-core/src/interfaces/gathering";
 import * as EventEmitter from 'events';
+import {Song} from "247-core/src/interfaces/song";
 
 let config = require('./config.json');
 
@@ -165,6 +166,14 @@ export class DataSync {
 
         socket.on(MyEvents.adminNewGathering, (time: number, callback: () => void) => {
             this.database.newGathering(time, callback);
+        });
+
+        socket.on(MyEvents.adminGetSongs, (callback: (songs: Song[]) => void) => {
+            this.database.getSongs(callback);
+        });
+
+        socket.on(MyEvents.adminNewSong, (title: string, callback: () => void) => {
+            this.database.addSong(title, callback);
         });
     }
 }
