@@ -152,4 +152,11 @@ export class MyDB {
             callback(results);
         })
     }
+
+    public newGathering(time: number, callback: () => void) {
+        this.conn.query('INSERT INTO gathering(time) VALUES(?)', [time], (err, result) => {
+            if (err) throw err;
+            callback();
+        });
+    }
 }

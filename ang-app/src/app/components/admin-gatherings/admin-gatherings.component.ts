@@ -11,14 +11,20 @@ import {User} from "247-core/src/interfaces/user";
 export class AdminGatheringsComponent implements OnInit {
 
     private gatherings: Gathering[];
-    private users: {[userID: number]: User};
+    private users: { [userID: number]: User };
+    private weekDays: string[]
 
     constructor(private core: CoreService) {
-        this.gatherings = null;
-        this.users = null;
+        this.weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
     }
 
     ngOnInit() {
+        this.fetchAll();
+    }
+
+    private fetchAll() {
+        this.gatherings = null;
+        this.users = null;
         this.core.adminGetGatherings((gatherings: Gathering[]) => {
             this.gatherings = gatherings;
         });
@@ -30,4 +36,40 @@ export class AdminGatheringsComponent implements OnInit {
         });
     }
 
+    minsToStr(mins: number): string {
+        let d = new Date(mins * 60 * 1000);
+
+        let hours = ((d.getHours() + 11) % 12 + 1);
+        let minsStr = d.getMinutes() + '';
+        if (minsStr.length < 2) minsStr = '0' + minsStr;
+
+        let suffix = d.getHours() >= 12 ? 'pm' : 'am';
+
+        return (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' ' + this.weekDays[d.getDay()] + ', ' + hours + ':' + minsStr + ' ' + suffix;
+    }
+
+    private nextGatheringMins() {
+        let d = new Date();
+        let daysToAdd = 5 - d.getDay();
+        if (daysToAdd < 0) daysToAdd += 7;
+
+        let curHour = Math.floor(d.getTime() / (1000 * 60 * 60));
+
+        d = new Date((curHour + daysToAdd * 24) * 60 * 60 * 1000);
+        d.setHours(19);
+
+        return Math.floor(d.getTime() / (1000 * 60));
+    }
+
+    newGathering() {
+        let nowMins = Math.floor(Date.now() / (1000 * 60));
+        if (nowMins < this.gatherings[this.gatherings.length - 1].time) {
+            alert('Cannot create a new gathering until the current gathering has passed');
+            return;
+        }
+
+        this.core.adminNewGathering(this.nextGatheringMins(), () => {
+            this.fetchAll();
+        });
+    }
 }

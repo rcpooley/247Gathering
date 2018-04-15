@@ -7,4 +7,5 @@ export class MyEvents {
     static adminLogin: string = 'adminLogin';
     static adminGetUsers: string = 'adminGetUsers';
     static adminGetGatherings: string = 'adminGetGatherings';
+    static adminNewGathering: string = 'adminNewGathering';
 }

@@ -6,8 +6,11 @@ import SocketIOStatic = require("socket.io");
 import * as jwt from 'jsonwebtoken';
 import {User} from "247-core/src/interfaces/user";
 import {Gathering} from "247-core/src/interfaces/gathering";
+import * as EventEmitter from 'events';
 
 let config = require('./config.json');
+
+class MySocket extends EventEmitter {}
 
 export class DataSync {
 
@@ -109,8 +112,10 @@ export class DataSync {
         });
     }
 
-    private adminEvents(socket: SocketIOStatic.Socket) {
-        socket.on(MyEvents.adminVerify, (token: string, callback: (loggedIn: boolean) => void) => {
+    private adminEvents(rawSocket: SocketIOStatic.Socket) {
+        let socket = new MySocket();
+
+        rawSocket.on(MyEvents.adminVerify, (token: string, callback: (loggedIn: boolean) => void) => {
             let decoded = this.jwtDecode(token);
 
             if (!!decoded.err) {
@@ -120,12 +125,20 @@ export class DataSync {
             }
         });
 
-        socket.on(MyEvents.adminLogin, (password: string, callback: (newToken: any) => void) => {
+        rawSocket.on(MyEvents.adminLogin, (password: string, callback: (newToken: any) => void) => {
             if (password === config['admin-password']) {
                 let token = this.jwtEncode({loggedIn: true});
                 callback(token);
             } else {
                 callback(null);
+            }
+        });
+
+        rawSocket.on('admin-event', (event: string, token: string, ...args: any[]) => {
+            let decoded = this.jwtDecode(token);
+
+            if (!decoded.err) {
+                socket.emit(event, ...args);
             }
         });
 
@@ -148,6 +161,10 @@ export class DataSync {
                     callback(gatherings);
                 });
             });
+        });
+
+        socket.on(MyEvents.adminNewGathering, (time: number, callback: () => void) => {
+            this.database.newGathering(time, callback);
         });
     }
 }

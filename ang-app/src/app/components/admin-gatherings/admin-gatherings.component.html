@@ -8,7 +8,7 @@
         </tr>
         <tr *ngFor="let gathering of gatherings">
             <td>{{gathering.id}}</td>
-            <td>{{gathering.time}}</td>
+            <td>{{minsToStr(gathering.time)}}</td>
             <td>
                 <ng-container *ngIf="users">
                     <span *ngFor="let uid of gathering.users">
@@ -18,6 +18,8 @@
             </td>
         </tr>
     </table>
+    <br>
+    <button (click)="newGathering()">New Gathering</button>
 </ng-container>
 <ng-template #nogatherings>
     Loading gatherings...

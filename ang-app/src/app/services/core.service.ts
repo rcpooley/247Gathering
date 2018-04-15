@@ -55,8 +55,8 @@ export class CoreService {
 
     private setCookie(cname: string, cvalue: string, exdays: number) {
         let d = new Date();
-        d.setTime(d.getTime() + (exdays*24*60*60*1000));
-        let expires = "expires="+ d.toUTCString();
+        d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+        let expires = "expires=" + d.toUTCString();
         document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
     }
 
@@ -64,7 +64,7 @@ export class CoreService {
         let name = cname + "=";
         let decodedCookie = decodeURIComponent(document.cookie);
         let ca = decodedCookie.split(';');
-        for(let i = 0; i <ca.length; i++) {
+        for (let i = 0; i < ca.length; i++) {
             let c = ca[i];
             while (c.charAt(0) == ' ') {
                 c = c.substring(1);
@@ -112,11 +112,19 @@ export class CoreService {
         });
     }
 
+    public adminEvent(event: string, ...args: any[]) {
+        this.socket.emit('admin-event', event, this.token, ...args);
+    }
+
     public adminGetUsers(callback: (users: User[]) => void) {
-        this.socket.emit(MyEvents.adminGetUsers, callback);
+        this.adminEvent(MyEvents.adminGetUsers, callback);
     }
 
     public adminGetGatherings(callback: (gatherings: Gathering[]) => void) {
-        this.socket.emit(MyEvents.adminGetGatherings, callback);
+        this.adminEvent(MyEvents.adminGetGatherings, callback);
+    }
+
+    public adminNewGathering(time: number, callback: () => void) {
+        this.adminEvent(MyEvents.adminNewGathering, time, callback);
     }
 }
