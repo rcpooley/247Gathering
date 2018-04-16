@@ -2,6 +2,12 @@ import * as mysql from 'mysql';
 import {Gathering} from "247-core/src/interfaces/gathering";
 import {User} from "247-core/src/interfaces/user";
 import {Song} from "247-core/src/interfaces/song";
+import {GatheringSong} from "247-core/src/interfaces/gatheringSong";
+
+interface OrderPair {
+    id: number;
+    orderNum: number;
+}
 
 export class MyDB {
 
@@ -170,6 +176,42 @@ export class MyDB {
 
     public addSong(title: string, callback: () => void) {
         this.conn.query('INSERT INTO song(title) VALUES(?)', [title], (err, result) => {
+            if (err) throw err;
+            callback();
+        });
+    }
+
+    public reorderGatheringSongs(newOrder: OrderPair[], callback: () => void) {
+        let proms = newOrder.map(order => new Promise(resolve => {
+            this.conn.query('UPDATE `gathering-song` SET orderNum=? WHERE id=?', [order.orderNum, order.id], err => {
+                if (err) throw err;
+                resolve();
+            });
+        }));
+
+        Promise.all(proms).then(callback);
+    }
+
+    public getGatheringSongs(gatheringID: number, callback: (songs: GatheringSong[]) => void) {
+        this.conn.query('SELECT * FROM `gathering-song` WHERE gatheringID=?', [gatheringID], (err, results) => {
+            if (err) throw err;
+            results.sort((a, b) => a.orderNum - b.orderNum);
+            callback(results);
+        });
+    }
+
+    public addGatheringSong(gatheringID: number, songID: number, callback: () => void) {
+        this.getGatheringSongs(gatheringID, (songs: GatheringSong[]) => {
+            let orderNum = songs.length == 0;
+            this.conn.query('INSERT INTO `gathering-song`(gatheringID, songID, orderNum) VALUES(?,?,?)', [gatheringID, songID, orderNum], err => {
+                if (err) throw err;
+                callback();
+            });
+        });
+    }
+
+    public deleteGatheringSong(id: number, callback: () => void) {
+        this.conn.query('DELETE FROM `gathering-song` WHERE id=?', [id], err => {
             if (err) throw err;
             callback();
         });

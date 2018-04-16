@@ -8,6 +8,7 @@ import {User} from "247-core/src/interfaces/user";
 import {Gathering} from "247-core/src/interfaces/gathering";
 import * as EventEmitter from 'events';
 import {Song} from "247-core/src/interfaces/song";
+import {GatheringSong} from "247-core/src/interfaces/gatheringSong";
 
 let config = require('./config.json');
 
@@ -174,6 +175,29 @@ export class DataSync {
 
         socket.on(MyEvents.adminNewSong, (title: string, callback: () => void) => {
             this.database.addSong(title, callback);
+        });
+
+        socket.on(MyEvents.adminUpdateGatheringSongs, (gatheringID: number, songs: GatheringSong[]) => {
+            this.database.getGatheringSongs(gatheringID, (curSongs: GatheringSong[]) => {
+                let curIDs = curSongs.map(song => song.songID);
+                let newIDs = songs.map(song => song.songID);
+                let deletedSongs = curSongs.filter(song => newIDs.indexOf(song.songID) == -1);
+                let addedSongs = songs.filter(song => curIDs.indexOf(song.songID) == -1);
+
+                let proms = deletedSongs.map(song => new Promise(resolve => {
+                    this.database.deleteGatheringSong(song.id, resolve);
+                }));
+
+                Promise.all(proms).then(() => {
+                    proms = addedSongs.map(song => new Promise(resolve => {
+                        this.database.addGatheringSong(gatheringID, song.songID, resolve);
+                    }));
+
+                    Promise.all(proms).then(() => {
+
+                    });
+                });
+            });
         });
     }
 }

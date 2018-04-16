@@ -10,4 +10,5 @@ export class MyEvents {
     static adminNewGathering: string = 'adminNewGathering';
     static adminGetSongs: string = 'adminGetSongs';
     static adminNewSong: string = 'adminNewSong';
+    static adminUpdateGatheringSongs: string = 'adminUpdateGatheringSongs';
 }

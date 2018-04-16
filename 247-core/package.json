@@ -1,6 +1,6 @@
 {
   "name": "247-core",
-  "version": "1.0.21",
+  "version": "1.0.23",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
