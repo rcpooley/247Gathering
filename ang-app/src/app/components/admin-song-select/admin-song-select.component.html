@@ -1,0 +1,42 @@
+<div id="main"
+     (window:mouseup)="mUp($event)">
+    <ng-container *ngIf="gathering != null && songs != null; else loading">
+        <table class="splitTable">
+            <tr>
+                <td>
+                    <h5>Current Songs</h5>
+                </td>
+                <td>
+                    <h5>Available Songs</h5>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div id="currentSongs"
+                         class="song-container noselect"
+                         (mousemove)="mMove($event)">
+                        <div *ngFor="let song of gathering.songs; index as i"
+                             class="songItem"
+                             (mousedown)="mDown($event, song)">
+                            {{i + 1}}) {{song.title}}
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div *ngFor="let song of songs">
+                        {{song.title}}<button>+</button>
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        <div class="footer">
+            <div class="tcell">
+                <button (click)="done()">Save</button>
+            </div>
+        </div>
+    </ng-container>
+    <ng-template #loading>
+        Loading data...
+    </ng-template>
+</div>

@@ -149,7 +149,18 @@ export class DataSync {
         });
 
         socket.on(MyEvents.adminGetGatherings, (callback: (gatherings: Gathering[]) => void) => {
-            this.database.getGatherings((gatherings: Gathering[]) => {
+            let proms = [];
+            proms.push(new Promise(resolve => {
+                this.database.getGatherings(resolve);
+            }));
+            proms.push(new Promise(resolve => {
+                this.database.getAllGatheringSongs(resolve);
+            }));
+
+            Promise.all(proms).then(values => {
+                let gatherings: Gathering[] = values[0];
+                let songs: GatheringSong[] = values[1];
+
                 let proms = gatherings.map(gathering => {
                     return new Promise(resolve => {
                         this.database.getCheckIns(gathering.id, ids => {
@@ -160,6 +171,16 @@ export class DataSync {
                 });
 
                 Promise.all(proms).then(() => {
+                    let gMap = {};
+                    gatherings.forEach(gathering => {
+                        gMap[gathering.id] = gathering;
+                        gathering.songs = [];
+                    });
+
+                    songs.forEach(song => {
+                        gMap[song.gatheringID].songs.push(song);
+                    });
+
                     callback(gatherings);
                 });
             });
@@ -177,7 +198,7 @@ export class DataSync {
             this.database.addSong(title, callback);
         });
 
-        socket.on(MyEvents.adminUpdateGatheringSongs, (gatheringID: number, songs: GatheringSong[]) => {
+        socket.on(MyEvents.adminUpdateGatheringSongs, (gatheringID: number, songs: GatheringSong[], callback: () => void) => {
             this.database.getGatheringSongs(gatheringID, (curSongs: GatheringSong[]) => {
                 let curIDs = curSongs.map(song => song.songID);
                 let newIDs = songs.map(song => song.songID);
@@ -190,11 +211,18 @@ export class DataSync {
 
                 Promise.all(proms).then(() => {
                     proms = addedSongs.map(song => new Promise(resolve => {
-                        this.database.addGatheringSong(gatheringID, song.songID, resolve);
+                        this.database.addGatheringSong(gatheringID, song.songID, newID => {
+                            song.id = newID;
+                            resolve();
+                        });
                     }));
 
                     Promise.all(proms).then(() => {
-
+                        songs.sort((a, b) => a.orderNum - b.orderNum);
+                        for (let i = 0; i < songs.length; i++) {
+                            songs[i].orderNum = i;
+                        }
+                        this.database.reorderGatheringSongs(songs, callback);
                     });
                 });
             });

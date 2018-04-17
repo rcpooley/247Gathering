@@ -12,7 +12,9 @@ export class AdminGatheringsComponent implements OnInit {
 
     private gatherings: Gathering[];
     private users: { [userID: number]: User };
-    private weekDays: string[]
+    private weekDays: string[];
+
+    editingSongs: boolean = true;
 
     constructor(private core: CoreService) {
         this.weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];

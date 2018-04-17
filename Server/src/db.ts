@@ -200,12 +200,12 @@ export class MyDB {
         });
     }
 
-    public addGatheringSong(gatheringID: number, songID: number, callback: () => void) {
+    public addGatheringSong(gatheringID: number, songID: number, callback: (newID: number) => void) {
         this.getGatheringSongs(gatheringID, (songs: GatheringSong[]) => {
             let orderNum = songs.length == 0;
-            this.conn.query('INSERT INTO `gathering-song`(gatheringID, songID, orderNum) VALUES(?,?,?)', [gatheringID, songID, orderNum], err => {
+            this.conn.query('INSERT INTO `gathering-song`(gatheringID, songID, orderNum) VALUES(?,?,?)', [gatheringID, songID, orderNum], (err, result) => {
                 if (err) throw err;
-                callback();
+                callback(result.insertId);
             });
         });
     }
@@ -214,6 +214,14 @@ export class MyDB {
         this.conn.query('DELETE FROM `gathering-song` WHERE id=?', [id], err => {
             if (err) throw err;
             callback();
+        });
+    }
+
+    public getAllGatheringSongs(callback: (songs: GatheringSong[]) => void) {
+        this.conn.query('SELECT g1.id, g1.gatheringID, g1.songID, g1.orderNum, s1.title FROM `gathering-song` g1 JOIN song s1 ON g1.songID = s1.id', (err, results) => {
+            if (err) throw err;
+            results.sort((a, b) => a.orderNum - b.orderNum);
+            callback(results);
         });
     }
 }

@@ -16,6 +16,7 @@ import { AdminNavbarComponent } from './components/admin-navbar/admin-navbar.com
 import { AdminUsersComponent } from './components/admin-users/admin-users.component';
 import { AdminGatheringsComponent } from './components/admin-gatherings/admin-gatherings.component';
 import { AdminSongsComponent } from './components/admin-songs/admin-songs.component';
+import { AdminSongSelectComponent } from './components/admin-song-select/admin-song-select.component';
 
 @NgModule({
     declarations: [
@@ -30,7 +31,8 @@ import { AdminSongsComponent } from './components/admin-songs/admin-songs.compon
         AdminNavbarComponent,
         AdminUsersComponent,
         AdminGatheringsComponent,
-        AdminSongsComponent
+        AdminSongsComponent,
+        AdminSongSelectComponent
     ],
     imports: [
         BrowserModule,
