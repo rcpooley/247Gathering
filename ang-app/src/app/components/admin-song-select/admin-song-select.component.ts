@@ -11,9 +11,9 @@ import {GatheringSong} from "247-core/src/interfaces/gatheringSong";
 })
 export class AdminSongSelectComponent implements OnInit {
 
-    private gathering: Gathering;
-    private songs: Song[];
-    private curSong: GatheringSong;
+    gathering: Gathering;
+    songs: Song[];
+    curSong: GatheringSong;
     @Output() finished = new EventEmitter();
 
     constructor(private core: CoreService) {
