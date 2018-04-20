@@ -65,7 +65,7 @@ export class AdminSongSelectComponent implements OnInit {
         this.curSong = song;
     }
 
-    mUp(e, song) {
+    mUp(e) {
         this.curSong = null;
     }
 }

@@ -9,7 +9,7 @@ import {User} from "247-core/src/interfaces/user";
 })
 export class AdminUsersComponent implements OnInit {
 
-    private users: User[];
+    users: User[];
 
     constructor(private core: CoreService) {
         this.users = null;

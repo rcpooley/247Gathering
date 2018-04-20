@@ -9,7 +9,7 @@ import {Song} from "247-core/src/interfaces/song";
 })
 export class AdminSongsComponent implements OnInit {
 
-    private songs: Song[];
+    songs: Song[];
 
     newSongTitle: string;
 

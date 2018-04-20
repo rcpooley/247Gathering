@@ -10,7 +10,7 @@ import {User} from "247-core/src/interfaces/user";
 })
 export class AdminGatheringsComponent implements OnInit {
 
-    private gatherings: Gathering[];
+    gatherings: Gathering[];
     private users: { [userID: number]: User };
     private weekDays: string[];
 
