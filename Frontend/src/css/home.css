@@ -1,0 +1,25 @@
+.component.home {
+  > .section-primary {
+    position: relative;
+    overflow: hidden;
+
+    > .img-wrapper {
+      position: absolute;
+    }
+
+    > .content {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1;
+      color: white;
+      font-family: Helvetica, serif;
+      text-align: center;
+
+      > .header {
+        font-size: 50px;
+      }
+    }
+  }
+}
