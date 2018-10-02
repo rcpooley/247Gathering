@@ -1,6 +1,8 @@
 // @flow
 import React from 'react';
 import Home from './components/home';
+import Navbar from './components/navbar';
+import './css/routes.css';
 
 type Props = {
 }
@@ -8,7 +10,14 @@ type Props = {
 class Routes extends React.Component<Props> {
 
     render() {
-        return <Home/>;
+        return (
+            <div id="routes">
+                <div id="navbar">
+                    <Navbar />
+                </div>
+                <Home />
+            </div>
+        )
     }
 
 }

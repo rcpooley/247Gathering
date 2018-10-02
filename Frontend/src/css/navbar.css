@@ -1,0 +1,6 @@
+.navbar {
+  ul.navbar-nav a.nav-link {
+    color: white;
+    font-weight: bold;
+  }
+}
